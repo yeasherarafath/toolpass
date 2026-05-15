@@ -1,0 +1,1328 @@
+﻿CREATE DATABASE IF NOT EXISTS tool_subscription_platform
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_unicode_ci;
+
+USE tool_subscription_platform;
+
+
+-- -----------------------------------------------------
+-- USERS
+-- -----------------------------------------------------
+-- Stores admins, staff, and customers.
+--
+-- role:
+-- admin    = owner
+-- staff    = support/manager
+-- customer = buyer
+--
+-- status:
+-- active
+-- suspended
+-- banned
+-- -----------------------------------------------------
+
+CREATE TABLE users (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    name VARCHAR(150) NOT NULL COMMENT 'User full name',
+    email VARCHAR(190) NOT NULL UNIQUE COMMENT 'User email address',
+    phone VARCHAR(30) NULL COMMENT 'User phone number',
+    password VARCHAR(255) NOT NULL COMMENT 'Hashed password',
+
+    role VARCHAR(30) NOT NULL DEFAULT 'customer' COMMENT 'admin, staff, customer',
+    status VARCHAR(30) NOT NULL DEFAULT 'active' COMMENT 'active, suspended, banned',
+
+    avatar VARCHAR(255) NULL COMMENT 'User profile image',
+    last_login_at TIMESTAMP NULL COMMENT 'Last login time',
+    email_verified_at TIMESTAMP NULL COMMENT 'Email verification time',
+
+    notes TEXT NULL COMMENT 'Private admin note about this user',
+
+    remember_token VARCHAR(100) NULL,
+
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    deleted_at TIMESTAMP NULL,
+
+    INDEX idx_users_role (role),
+    INDEX idx_users_status (status),
+    INDEX idx_users_phone (phone)
+) ENGINE=InnoDB COMMENT='Stores admins, staff, and customers';
+
+
+-- -----------------------------------------------------
+-- TOOL CATEGORIES
+-- -----------------------------------------------------
+-- Example:
+-- SEO Tools
+-- AI Tools
+-- Developer Tools
+-- Design Tools
+-- Content Writing Tools
+-- -----------------------------------------------------
+
+CREATE TABLE tool_categories (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    name VARCHAR(150) NOT NULL COMMENT 'Category name, for example SEO Tools',
+    slug VARCHAR(190) NOT NULL UNIQUE COMMENT 'URL-friendly category name',
+    description TEXT NULL COMMENT 'Category description',
+
+    status VARCHAR(30) NOT NULL DEFAULT 'active' COMMENT 'active, inactive',
+    sort_order INT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Display order',
+
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    deleted_at TIMESTAMP NULL,
+
+    INDEX idx_tool_categories_status (status)
+) ENGINE=InnoDB COMMENT='Stores categories for tools';
+
+
+-- -----------------------------------------------------
+-- TOOLS
+-- -----------------------------------------------------
+-- One row = one actual tool/software.
+--
+-- access_type:
+-- credential  = customer receives credential/instruction
+-- invite      = admin must invite customer manually
+-- instruction = customer receives instruction only
+-- manual      = admin must process manually
+-- external    = access handled outside the platform
+--
+-- OTP/2FA:
+-- Some tools may need email OTP, SMS OTP, authenticator code,
+-- backup code, or device approval.
+--
+-- Device restriction:
+-- Some tools may restrict number of devices, browsers,
+-- sessions, IPs, or simultaneous users.
+-- -----------------------------------------------------
+
+CREATE TABLE tools (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    category_id BIGINT UNSIGNED NULL COMMENT 'Related tool category',
+
+    name VARCHAR(150) NOT NULL COMMENT 'Tool name, for example ChatGPT or Ahrefs',
+    slug VARCHAR(190) NOT NULL UNIQUE COMMENT 'URL-friendly tool name',
+    website_url VARCHAR(255) NULL COMMENT 'Official website URL',
+    logo VARCHAR(255) NULL COMMENT 'Tool logo image path',
+    description TEXT NULL COMMENT 'Tool description',
+
+    status VARCHAR(30) NOT NULL DEFAULT 'active' COMMENT 'active, inactive',
+
+    access_type VARCHAR(50) NOT NULL DEFAULT 'credential'
+        COMMENT 'credential, invite, instruction, manual, external',
+
+    otp_required TINYINT(1) NOT NULL DEFAULT 0
+        COMMENT '1 means this tool may require OTP or 2FA during login',
+
+    otp_type VARCHAR(50) NULL
+        COMMENT 'email, sms, authenticator, backup_code, device_approval, manual',
+
+    otp_note TEXT NULL
+        COMMENT 'Admin/customer note about OTP or 2FA process',
+
+    device_restriction_enabled TINYINT(1) NOT NULL DEFAULT 0
+        COMMENT '1 means this tool has device/session/IP restrictions',
+
+    device_limit_type VARCHAR(50) NULL
+        COMMENT 'device, browser, session, ip, simultaneous_user, none',
+
+    default_max_devices INT UNSIGNED NULL
+        COMMENT 'Default allowed devices/sessions for this tool',
+
+    device_policy_note TEXT NULL
+        COMMENT 'Customer/admin note about device restrictions',
+
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    deleted_at TIMESTAMP NULL,
+
+    CONSTRAINT fk_tools_category
+        FOREIGN KEY (category_id)
+        REFERENCES tool_categories(id)
+        ON DELETE SET NULL,
+
+    INDEX idx_tools_category_id (category_id),
+    INDEX idx_tools_status (status),
+    INDEX idx_tools_access_type (access_type),
+    INDEX idx_tools_otp_required (otp_required),
+    INDEX idx_tools_device_restriction_enabled (device_restriction_enabled)
+) ENGINE=InnoDB COMMENT='Stores tools/software that can be sold individually or inside bundles';
+
+
+-- -----------------------------------------------------
+-- TOOL ACCOUNTS
+-- -----------------------------------------------------
+-- One row = one owned subscription/account/license.
+--
+-- Example:
+-- Tool: ChatGPT
+-- Account: ChatGPT Pro Account 1
+-- Max users: 5
+-- Used slots: 3
+--
+-- max_users / used_slots:
+-- Tracks how many customers are assigned.
+--
+-- max_devices / used_devices:
+-- Tracks how many devices/sessions/IPs are used.
+--
+-- Sensitive fields should be encrypted by Laravel.
+-- -----------------------------------------------------
+
+CREATE TABLE tool_accounts (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    tool_id BIGINT UNSIGNED NOT NULL COMMENT 'Related tool',
+
+    name VARCHAR(150) NOT NULL COMMENT 'Internal account name, for example ChatGPT Pro Account 1',
+
+    login_email VARCHAR(190) NULL COMMENT 'Login email if credential-based access is used',
+    login_password_encrypted TEXT NULL COMMENT 'Encrypted password, never plain text',
+    recovery_email VARCHAR(190) NULL COMMENT 'Recovery email',
+    account_url VARCHAR(255) NULL COMMENT 'Login or dashboard URL',
+
+    subscription_type VARCHAR(50) NOT NULL DEFAULT 'monthly'
+        COMMENT 'monthly, yearly, lifetime, trial',
+
+    purchase_price DECIMAL(12,2) NOT NULL DEFAULT 0.00 COMMENT 'Original purchase cost',
+    renewal_price DECIMAL(12,2) NOT NULL DEFAULT 0.00 COMMENT 'Renewal cost',
+    purchase_date DATE NULL COMMENT 'Purchase date',
+    renewal_date DATE NULL COMMENT 'Next renewal date',
+    expires_at DATE NULL COMMENT 'Subscription expiry date',
+
+    max_users INT UNSIGNED NOT NULL DEFAULT 1 COMMENT 'Maximum customers allowed for this account',
+    used_slots INT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Currently assigned customers',
+
+    device_restriction_enabled TINYINT(1) NOT NULL DEFAULT 0
+        COMMENT '1 means this account has device/session/IP restrictions',
+
+    max_devices INT UNSIGNED NULL
+        COMMENT 'Maximum allowed devices/sessions/IPs for this account',
+
+    used_devices INT UNSIGNED NOT NULL DEFAULT 0
+        COMMENT 'Currently registered/used devices',
+
+    device_limit_type VARCHAR(50) NULL
+        COMMENT 'device, browser, session, ip, simultaneous_user, none',
+
+    allow_device_reset TINYINT(1) NOT NULL DEFAULT 1
+        COMMENT '1 means admin can reset/remove devices',
+
+    device_reset_interval_days INT UNSIGNED NULL
+        COMMENT 'Minimum days before customer can request device reset again',
+
+    device_policy_note TEXT NULL
+        COMMENT 'Admin/customer note about account device policy',
+
+    otp_required TINYINT(1) NOT NULL DEFAULT 0
+        COMMENT '1 means this account requires OTP/2FA',
+
+    otp_type VARCHAR(50) NULL
+        COMMENT 'email, sms, authenticator, backup_code, device_approval, manual',
+
+    otp_receiver VARCHAR(190) NULL
+        COMMENT 'Where OTP is received, for example owner email or phone',
+
+    otp_note TEXT NULL
+        COMMENT 'Private admin note about how to handle OTP/2FA',
+
+    two_factor_secret_encrypted TEXT NULL
+        COMMENT 'Encrypted 2FA secret if owner decides to store it',
+
+    backup_codes_encrypted TEXT NULL
+        COMMENT 'Encrypted backup codes if used',
+
+    status VARCHAR(30) NOT NULL DEFAULT 'active'
+        COMMENT 'active, expired, full, disabled, issue',
+
+    last_checked_at TIMESTAMP NULL COMMENT 'Last admin check time',
+    last_issue_at TIMESTAMP NULL COMMENT 'Last issue report time',
+    issue_note TEXT NULL COMMENT 'Issue note if account has problem',
+
+    notes TEXT NULL COMMENT 'Private admin note',
+
+    created_by BIGINT UNSIGNED NULL COMMENT 'Admin/staff who created this account',
+    updated_by BIGINT UNSIGNED NULL COMMENT 'Admin/staff who last updated this account',
+
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    deleted_at TIMESTAMP NULL,
+
+    CONSTRAINT fk_tool_accounts_tool
+        FOREIGN KEY (tool_id)
+        REFERENCES tools(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_tool_accounts_created_by
+        FOREIGN KEY (created_by)
+        REFERENCES users(id)
+        ON DELETE SET NULL,
+
+    CONSTRAINT fk_tool_accounts_updated_by
+        FOREIGN KEY (updated_by)
+        REFERENCES users(id)
+        ON DELETE SET NULL,
+
+    INDEX idx_tool_accounts_tool_id (tool_id),
+    INDEX idx_tool_accounts_status (status),
+    INDEX idx_tool_accounts_renewal_date (renewal_date),
+    INDEX idx_tool_accounts_expires_at (expires_at),
+    INDEX idx_tool_accounts_otp_required (otp_required),
+    INDEX idx_tool_accounts_device_restriction_enabled (device_restriction_enabled)
+) ENGINE=InnoDB COMMENT='Stores owned tool subscriptions/accounts/licenses';
+
+
+-- -----------------------------------------------------
+-- PACKAGES
+-- -----------------------------------------------------
+-- One row = one sellable product/package.
+--
+-- type:
+-- single = one tool package
+-- bundle = multiple tools package
+--
+-- delivery_type:
+-- auto   = can be delivered after payment/info approval
+-- manual = admin must manually process
+-- mixed  = package contains both auto and manual/invite tools
+-- -----------------------------------------------------
+
+CREATE TABLE packages (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    name VARCHAR(150) NOT NULL COMMENT 'Package name shown to customer',
+    slug VARCHAR(190) NOT NULL UNIQUE COMMENT 'URL-friendly package name',
+
+    type VARCHAR(30) NOT NULL DEFAULT 'single' COMMENT 'single, bundle',
+
+    delivery_type VARCHAR(50) NOT NULL DEFAULT 'auto'
+        COMMENT 'auto, manual, mixed',
+
+    description TEXT NULL COMMENT 'Package description',
+    price DECIMAL(12,2) NOT NULL DEFAULT 0.00 COMMENT 'Selling price',
+    duration_days INT UNSIGNED NOT NULL DEFAULT 30 COMMENT 'Access duration in days',
+
+    status VARCHAR(30) NOT NULL DEFAULT 'active' COMMENT 'active, inactive',
+
+    sort_order INT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Display order',
+    is_featured TINYINT(1) NOT NULL DEFAULT 0 COMMENT '1 means featured package',
+
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    deleted_at TIMESTAMP NULL,
+
+    INDEX idx_packages_type (type),
+    INDEX idx_packages_delivery_type (delivery_type),
+    INDEX idx_packages_status (status),
+    INDEX idx_packages_price (price)
+) ENGINE=InnoDB COMMENT='Stores sellable single-tool or multi-tool bundle packages';
+
+
+-- -----------------------------------------------------
+-- PACKAGE TOOLS
+-- -----------------------------------------------------
+-- Connects packages with tools.
+--
+-- Example:
+-- SEO Bundle contains Ahrefs, Moz, Semrush, ChatGPT.
+-- -----------------------------------------------------
+
+CREATE TABLE package_tools (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    package_id BIGINT UNSIGNED NOT NULL COMMENT 'Related package',
+    tool_id BIGINT UNSIGNED NOT NULL COMMENT 'Tool included in package',
+
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+
+    CONSTRAINT fk_package_tools_package
+        FOREIGN KEY (package_id)
+        REFERENCES packages(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_package_tools_tool
+        FOREIGN KEY (tool_id)
+        REFERENCES tools(id)
+        ON DELETE CASCADE,
+
+    UNIQUE KEY uq_package_tool (package_id, tool_id),
+    INDEX idx_package_tools_package_id (package_id),
+    INDEX idx_package_tools_tool_id (tool_id)
+) ENGINE=InnoDB COMMENT='Stores tools included in each package';
+
+
+-- -----------------------------------------------------
+-- PACKAGE CUSTOM FIELDS
+-- -----------------------------------------------------
+-- Admin can define required customer information per package.
+--
+-- Example:
+-- Canva Team Invite:
+-- - Invite Email
+-- - Full Name
+--
+-- SEO Service:
+-- - Website URL
+-- - Keywords
+-- - Target Country
+-- -----------------------------------------------------
+
+CREATE TABLE package_custom_fields (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    package_id BIGINT UNSIGNED NOT NULL COMMENT 'Package/product that needs this field',
+
+    label VARCHAR(150) NOT NULL COMMENT 'Field label shown to customer',
+    name VARCHAR(150) NOT NULL COMMENT 'Machine field name, for example invite_email',
+
+    type VARCHAR(50) NOT NULL DEFAULT 'text'
+        COMMENT 'text, email, number, textarea, url, select, checkbox, radio, date, file',
+
+    placeholder VARCHAR(255) NULL COMMENT 'Input placeholder text',
+    help_text TEXT NULL COMMENT 'Help text shown below field',
+
+    options JSON NULL COMMENT 'Options for select, checkbox, or radio fields',
+
+    is_required TINYINT(1) NOT NULL DEFAULT 0 COMMENT '1 means customer must fill this field',
+    validation_rules VARCHAR(255) NULL COMMENT 'Laravel validation rules, for example required|email',
+
+    sort_order INT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Field display order',
+    status VARCHAR(30) NOT NULL DEFAULT 'active' COMMENT 'active, inactive',
+
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    deleted_at TIMESTAMP NULL,
+
+    CONSTRAINT fk_package_custom_fields_package
+        FOREIGN KEY (package_id)
+        REFERENCES packages(id)
+        ON DELETE CASCADE,
+
+    UNIQUE KEY uq_package_custom_field_name (package_id, name),
+
+    INDEX idx_package_custom_fields_package_id (package_id),
+    INDEX idx_package_custom_fields_type (type),
+    INDEX idx_package_custom_fields_status (status)
+) ENGINE=InnoDB COMMENT='Stores custom customer information fields required for packages';
+
+
+-- -----------------------------------------------------
+-- ORDERS
+-- -----------------------------------------------------
+-- One row = one customer purchase.
+--
+-- required_info_status:
+-- not_required = package does not need extra info
+-- pending      = customer must submit info
+-- submitted    = customer submitted info
+-- approved     = admin approved info
+-- rejected     = admin rejected info
+-- -----------------------------------------------------
+
+CREATE TABLE orders (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    user_id BIGINT UNSIGNED NOT NULL COMMENT 'Customer who placed order',
+    package_id BIGINT UNSIGNED NOT NULL COMMENT 'Purchased package',
+
+    order_number VARCHAR(50) NOT NULL UNIQUE COMMENT 'Public order number, for example ORD-10001',
+
+    amount DECIMAL(12,2) NOT NULL DEFAULT 0.00 COMMENT 'Original package amount',
+    discount_amount DECIMAL(12,2) NOT NULL DEFAULT 0.00 COMMENT 'Discount amount',
+    payable_amount DECIMAL(12,2) NOT NULL DEFAULT 0.00 COMMENT 'Final payable amount',
+
+    payment_method VARCHAR(50) NULL COMMENT 'bkash, nagad, rocket, bank, manual, card',
+    payment_status VARCHAR(30) NOT NULL DEFAULT 'pending'
+        COMMENT 'pending, paid, failed, refunded',
+
+    order_status VARCHAR(30) NOT NULL DEFAULT 'pending'
+        COMMENT 'pending, active, expired, cancelled',
+
+    required_info_status VARCHAR(30) NOT NULL DEFAULT 'not_required'
+        COMMENT 'not_required, pending, submitted, approved, rejected',
+
+    required_info_submitted_at TIMESTAMP NULL COMMENT 'When customer submitted required information',
+    required_info_reviewed_by BIGINT UNSIGNED NULL COMMENT 'Admin/staff who reviewed required information',
+    required_info_reviewed_at TIMESTAMP NULL COMMENT 'When required information was reviewed',
+    required_info_reject_reason TEXT NULL COMMENT 'Reason if required information was rejected',
+
+    starts_at TIMESTAMP NULL COMMENT 'Order/access start time',
+    expires_at TIMESTAMP NULL COMMENT 'Order/access expiry time',
+
+    renewed_from_order_id BIGINT UNSIGNED NULL COMMENT 'Previous order ID if this is renewal',
+
+    customer_note TEXT NULL COMMENT 'Customer note',
+    admin_note TEXT NULL COMMENT 'Private admin note',
+
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    deleted_at TIMESTAMP NULL,
+
+    CONSTRAINT fk_orders_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_orders_package
+        FOREIGN KEY (package_id)
+        REFERENCES packages(id)
+        ON DELETE RESTRICT,
+
+    CONSTRAINT fk_orders_required_info_reviewed_by
+        FOREIGN KEY (required_info_reviewed_by)
+        REFERENCES users(id)
+        ON DELETE SET NULL,
+
+    CONSTRAINT fk_orders_renewed_from
+        FOREIGN KEY (renewed_from_order_id)
+        REFERENCES orders(id)
+        ON DELETE SET NULL,
+
+    INDEX idx_orders_user_id (user_id),
+    INDEX idx_orders_package_id (package_id),
+    INDEX idx_orders_payment_status (payment_status),
+    INDEX idx_orders_order_status (order_status),
+    INDEX idx_orders_required_info_status (required_info_status),
+    INDEX idx_orders_expires_at (expires_at)
+) ENGINE=InnoDB COMMENT='Stores customer orders and required information review status';
+
+
+-- -----------------------------------------------------
+-- ORDER CUSTOM FIELD VALUES
+-- -----------------------------------------------------
+-- Stores customer answers to package custom fields.
+--
+-- Example:
+-- Order: Canva Team Invite
+-- Invite Email: rahim@example.com
+-- Full Name: Rahim Ahmed
+-- -----------------------------------------------------
+
+CREATE TABLE order_custom_field_values (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    order_id BIGINT UNSIGNED NOT NULL COMMENT 'Related order',
+    package_custom_field_id BIGINT UNSIGNED NOT NULL COMMENT 'Related package custom field',
+
+    field_name VARCHAR(150) NOT NULL COMMENT 'Copied field name for history/easier lookup',
+    field_label VARCHAR(150) NOT NULL COMMENT 'Copied field label for history',
+
+    value TEXT NULL COMMENT 'Customer submitted value',
+    file_path VARCHAR(255) NULL COMMENT 'Uploaded file path if field type is file',
+
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    deleted_at TIMESTAMP NULL,
+
+    CONSTRAINT fk_order_custom_field_values_order
+        FOREIGN KEY (order_id)
+        REFERENCES orders(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_order_custom_field_values_field
+        FOREIGN KEY (package_custom_field_id)
+        REFERENCES package_custom_fields(id)
+        ON DELETE CASCADE,
+
+    UNIQUE KEY uq_order_custom_field_value (order_id, package_custom_field_id),
+
+    INDEX idx_order_custom_field_values_order_id (order_id),
+    INDEX idx_order_custom_field_values_field_id (package_custom_field_id),
+    INDEX idx_order_custom_field_values_field_name (field_name)
+) ENGINE=InnoDB COMMENT='Stores customer submitted answers for package custom fields';
+
+
+-- -----------------------------------------------------
+-- PAYMENTS
+-- -----------------------------------------------------
+-- Useful for manual payments:
+-- bKash, Nagad, Rocket, bank transfer, card, etc.
+-- -----------------------------------------------------
+
+CREATE TABLE payments (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    order_id BIGINT UNSIGNED NOT NULL COMMENT 'Related order',
+    user_id BIGINT UNSIGNED NOT NULL COMMENT 'Customer who made payment',
+
+    amount DECIMAL(12,2) NOT NULL DEFAULT 0.00 COMMENT 'Paid amount',
+    method VARCHAR(50) NOT NULL COMMENT 'bkash, nagad, rocket, bank, manual, card',
+
+    transaction_id VARCHAR(100) NULL COMMENT 'Payment transaction ID',
+    sender_number VARCHAR(50) NULL COMMENT 'Sender mobile number',
+    screenshot VARCHAR(255) NULL COMMENT 'Payment screenshot path',
+
+    status VARCHAR(30) NOT NULL DEFAULT 'pending'
+        COMMENT 'pending, verified, rejected',
+
+    verified_by BIGINT UNSIGNED NULL COMMENT 'Admin/staff who verified payment',
+    verified_at TIMESTAMP NULL COMMENT 'Payment verification time',
+
+    reject_reason TEXT NULL COMMENT 'Reason if payment rejected',
+    note TEXT NULL COMMENT 'Private payment note',
+
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    deleted_at TIMESTAMP NULL,
+
+    CONSTRAINT fk_payments_order
+        FOREIGN KEY (order_id)
+        REFERENCES orders(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_payments_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_payments_verified_by
+        FOREIGN KEY (verified_by)
+        REFERENCES users(id)
+        ON DELETE SET NULL,
+
+    INDEX idx_payments_order_id (order_id),
+    INDEX idx_payments_user_id (user_id),
+    INDEX idx_payments_status (status),
+    INDEX idx_payments_method (method),
+    INDEX idx_payments_transaction_id (transaction_id)
+) ENGINE=InnoDB COMMENT='Stores customer payment records and verification status';
+
+
+-- -----------------------------------------------------
+-- USER TOOL ACCESSES
+-- -----------------------------------------------------
+-- One row = one user has access to one tool/account.
+--
+-- Supports:
+-- instant credential access
+-- invite-only access
+-- manual delivery
+-- bonus access
+-- trial access
+-- replacement access
+--
+-- source:
+-- order
+-- manual
+-- bonus
+-- replacement
+-- trial
+--
+-- status:
+-- active
+-- expired
+-- suspended
+-- revoked
+--
+-- delivery_status:
+-- pending
+-- processing
+-- delivered
+-- failed
+-- cancelled
+-- -----------------------------------------------------
+
+CREATE TABLE user_tool_accesses (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    user_id BIGINT UNSIGNED NOT NULL COMMENT 'Customer who gets access',
+
+    order_id BIGINT UNSIGNED NULL COMMENT 'Order that created this access, NULL for manual admin sharing',
+
+    tool_id BIGINT UNSIGNED NOT NULL COMMENT 'Tool user gets access to',
+
+    tool_account_id BIGINT UNSIGNED NULL COMMENT 'Specific tool account assigned to user, can be NULL for pure manual/invite access',
+
+    source VARCHAR(30) NOT NULL DEFAULT 'order'
+        COMMENT 'order, manual, bonus, replacement, trial',
+
+    status VARCHAR(30) NOT NULL DEFAULT 'active'
+        COMMENT 'active, expired, suspended, revoked',
+
+    delivery_status VARCHAR(50) NOT NULL DEFAULT 'pending'
+        COMMENT 'pending, processing, delivered, failed, cancelled',
+
+    customer_email_for_invite VARCHAR(190) NULL COMMENT 'Email admin should invite for invite-only tools',
+
+    starts_at TIMESTAMP NULL COMMENT 'Access start time',
+    expires_at TIMESTAMP NULL COMMENT 'Access expiry time',
+
+    invited_at TIMESTAMP NULL COMMENT 'When admin sent invite',
+    delivered_at TIMESTAMP NULL COMMENT 'When access was delivered',
+
+    access_note TEXT NULL COMMENT 'Instruction shown to customer',
+    delivery_note TEXT NULL COMMENT 'Customer/admin-facing delivery note',
+    internal_note TEXT NULL COMMENT 'Private admin note',
+
+    last_accessed_at TIMESTAMP NULL COMMENT 'Last time customer viewed/opened this access',
+
+    revoked_at TIMESTAMP NULL COMMENT 'When access was revoked',
+    revoked_by BIGINT UNSIGNED NULL COMMENT 'Admin/staff who revoked access',
+    revoked_reason TEXT NULL COMMENT 'Reason for revoking access',
+
+    created_by BIGINT UNSIGNED NULL COMMENT 'Admin/staff who assigned access',
+    updated_by BIGINT UNSIGNED NULL COMMENT 'Admin/staff who updated access',
+
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    deleted_at TIMESTAMP NULL,
+
+    CONSTRAINT fk_user_tool_accesses_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_user_tool_accesses_order
+        FOREIGN KEY (order_id)
+        REFERENCES orders(id)
+        ON DELETE SET NULL,
+
+    CONSTRAINT fk_user_tool_accesses_tool
+        FOREIGN KEY (tool_id)
+        REFERENCES tools(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_user_tool_accesses_tool_account
+        FOREIGN KEY (tool_account_id)
+        REFERENCES tool_accounts(id)
+        ON DELETE SET NULL,
+
+    CONSTRAINT fk_user_tool_accesses_revoked_by
+        FOREIGN KEY (revoked_by)
+        REFERENCES users(id)
+        ON DELETE SET NULL,
+
+    CONSTRAINT fk_user_tool_accesses_created_by
+        FOREIGN KEY (created_by)
+        REFERENCES users(id)
+        ON DELETE SET NULL,
+
+    CONSTRAINT fk_user_tool_accesses_updated_by
+        FOREIGN KEY (updated_by)
+        REFERENCES users(id)
+        ON DELETE SET NULL,
+
+    INDEX idx_user_tool_accesses_user_id (user_id),
+    INDEX idx_user_tool_accesses_order_id (order_id),
+    INDEX idx_user_tool_accesses_tool_id (tool_id),
+    INDEX idx_user_tool_accesses_tool_account_id (tool_account_id),
+    INDEX idx_user_tool_accesses_source (source),
+    INDEX idx_user_tool_accesses_status (status),
+    INDEX idx_user_tool_accesses_delivery_status (delivery_status),
+    INDEX idx_user_tool_accesses_expires_at (expires_at)
+) ENGINE=InnoDB COMMENT='Stores customer access to tools/accounts including manual and invite-only delivery';
+
+
+-- -----------------------------------------------------
+-- USER TOOL DEVICES
+-- -----------------------------------------------------
+-- Tracks customer devices, browsers, sessions, IPs, or
+-- fingerprints used for tool access.
+--
+-- status:
+-- active
+-- pending_approval
+-- blocked
+-- removed
+-- expired
+-- -----------------------------------------------------
+
+CREATE TABLE user_tool_devices (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    user_id BIGINT UNSIGNED NOT NULL COMMENT 'Customer who owns/uses this device',
+    user_tool_access_id BIGINT UNSIGNED NOT NULL COMMENT 'Related user tool access',
+    tool_id BIGINT UNSIGNED NOT NULL COMMENT 'Related tool',
+    tool_account_id BIGINT UNSIGNED NULL COMMENT 'Related tool account',
+
+    device_name VARCHAR(150) NULL COMMENT 'Customer/admin friendly device name, for example Rahim Chrome Laptop',
+    device_type VARCHAR(50) NULL COMMENT 'desktop, laptop, mobile, tablet, browser, unknown',
+    browser_name VARCHAR(100) NULL COMMENT 'Browser name if known',
+    operating_system VARCHAR(100) NULL COMMENT 'Operating system if known',
+
+    ip_address VARCHAR(45) NULL COMMENT 'Last known IP address',
+    user_agent TEXT NULL COMMENT 'Browser/device user agent',
+
+    device_fingerprint VARCHAR(190) NULL COMMENT 'Optional device/browser fingerprint hash',
+
+    status VARCHAR(30) NOT NULL DEFAULT 'active'
+        COMMENT 'active, pending_approval, blocked, removed, expired',
+
+    approved_by BIGINT UNSIGNED NULL COMMENT 'Admin/staff who approved this device',
+    approved_at TIMESTAMP NULL COMMENT 'When device was approved',
+
+    first_used_at TIMESTAMP NULL COMMENT 'First time this device was used/registered',
+    last_used_at TIMESTAMP NULL COMMENT 'Last time this device was used',
+
+    removed_by BIGINT UNSIGNED NULL COMMENT 'Admin/staff who removed this device',
+    removed_at TIMESTAMP NULL COMMENT 'When device was removed',
+    remove_reason TEXT NULL COMMENT 'Reason for removing/blocking device',
+
+    note TEXT NULL COMMENT 'Private admin note',
+
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    deleted_at TIMESTAMP NULL,
+
+    CONSTRAINT fk_user_tool_devices_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_user_tool_devices_access
+        FOREIGN KEY (user_tool_access_id)
+        REFERENCES user_tool_accesses(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_user_tool_devices_tool
+        FOREIGN KEY (tool_id)
+        REFERENCES tools(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_user_tool_devices_tool_account
+        FOREIGN KEY (tool_account_id)
+        REFERENCES tool_accounts(id)
+        ON DELETE SET NULL,
+
+    CONSTRAINT fk_user_tool_devices_approved_by
+        FOREIGN KEY (approved_by)
+        REFERENCES users(id)
+        ON DELETE SET NULL,
+
+    CONSTRAINT fk_user_tool_devices_removed_by
+        FOREIGN KEY (removed_by)
+        REFERENCES users(id)
+        ON DELETE SET NULL,
+
+    INDEX idx_user_tool_devices_user_id (user_id),
+    INDEX idx_user_tool_devices_access_id (user_tool_access_id),
+    INDEX idx_user_tool_devices_tool_id (tool_id),
+    INDEX idx_user_tool_devices_tool_account_id (tool_account_id),
+    INDEX idx_user_tool_devices_status (status),
+    INDEX idx_user_tool_devices_fingerprint (device_fingerprint),
+    INDEX idx_user_tool_devices_ip_address (ip_address)
+) ENGINE=InnoDB COMMENT='Tracks customer devices/sessions/IPs used for tool access';
+
+
+-- -----------------------------------------------------
+-- DEVICE RESET REQUESTS
+-- -----------------------------------------------------
+-- Customer can request device reset/change when device
+-- limit is reached or they changed browser/laptop/mobile.
+--
+-- status:
+-- pending
+-- processing
+-- approved
+-- rejected
+-- cancelled
+-- -----------------------------------------------------
+
+CREATE TABLE device_reset_requests (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    user_id BIGINT UNSIGNED NOT NULL COMMENT 'Customer requesting device reset',
+    user_tool_access_id BIGINT UNSIGNED NOT NULL COMMENT 'Related user tool access',
+    tool_id BIGINT UNSIGNED NOT NULL COMMENT 'Related tool',
+    tool_account_id BIGINT UNSIGNED NULL COMMENT 'Related tool account',
+
+    old_device_id BIGINT UNSIGNED NULL COMMENT 'Device customer wants to remove/reset',
+
+    status VARCHAR(30) NOT NULL DEFAULT 'pending'
+        COMMENT 'pending, processing, approved, rejected, cancelled',
+
+    customer_reason TEXT NULL COMMENT 'Customer reason for reset request',
+    admin_note TEXT NULL COMMENT 'Private admin note',
+
+    reviewed_by BIGINT UNSIGNED NULL COMMENT 'Admin/staff who reviewed request',
+    reviewed_at TIMESTAMP NULL COMMENT 'When request was reviewed',
+    reject_reason TEXT NULL COMMENT 'Reason if rejected',
+
+    completed_at TIMESTAMP NULL COMMENT 'When device reset was completed',
+
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    deleted_at TIMESTAMP NULL,
+
+    CONSTRAINT fk_device_reset_requests_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_device_reset_requests_access
+        FOREIGN KEY (user_tool_access_id)
+        REFERENCES user_tool_accesses(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_device_reset_requests_tool
+        FOREIGN KEY (tool_id)
+        REFERENCES tools(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_device_reset_requests_tool_account
+        FOREIGN KEY (tool_account_id)
+        REFERENCES tool_accounts(id)
+        ON DELETE SET NULL,
+
+    CONSTRAINT fk_device_reset_requests_old_device
+        FOREIGN KEY (old_device_id)
+        REFERENCES user_tool_devices(id)
+        ON DELETE SET NULL,
+
+    CONSTRAINT fk_device_reset_requests_reviewed_by
+        FOREIGN KEY (reviewed_by)
+        REFERENCES users(id)
+        ON DELETE SET NULL,
+
+    INDEX idx_device_reset_requests_user_id (user_id),
+    INDEX idx_device_reset_requests_access_id (user_tool_access_id),
+    INDEX idx_device_reset_requests_tool_id (tool_id),
+    INDEX idx_device_reset_requests_tool_account_id (tool_account_id),
+    INDEX idx_device_reset_requests_old_device_id (old_device_id),
+    INDEX idx_device_reset_requests_status (status)
+) ENGINE=InnoDB COMMENT='Stores customer device reset/change requests';
+
+
+-- -----------------------------------------------------
+-- OTP REQUESTS
+-- -----------------------------------------------------
+-- Customer can request OTP/2FA code when login requires:
+-- email OTP, SMS OTP, authenticator code, backup code,
+-- device approval, or manual verification.
+--
+-- status:
+-- pending     = customer requested OTP, admin has not started
+-- processing  = admin is checking email/phone/authenticator
+-- provided    = admin provided OTP, customer has not used it yet
+-- used        = customer used/marked OTP as used
+-- expired     = OTP expired automatically
+-- rejected    = admin rejected the request
+-- cancelled   = request was cancelled before completion
+-- revoked     = previously valid OTP/request was manually invalidated
+-- -----------------------------------------------------
+
+CREATE TABLE otp_requests (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    user_id BIGINT UNSIGNED NOT NULL COMMENT 'Customer requesting OTP/2FA code',
+    order_id BIGINT UNSIGNED NULL COMMENT 'Related order if available',
+    user_tool_access_id BIGINT UNSIGNED NOT NULL COMMENT 'Related user tool access',
+    tool_id BIGINT UNSIGNED NOT NULL COMMENT 'Related tool',
+    tool_account_id BIGINT UNSIGNED NULL COMMENT 'Related tool account',
+
+    request_type VARCHAR(50) NOT NULL DEFAULT 'email_otp'
+        COMMENT 'email_otp, sms_otp, authenticator_2fa, backup_code, device_approval, manual',
+
+    status VARCHAR(30) NOT NULL DEFAULT 'pending'
+        COMMENT 'pending, processing, provided, used, expired, rejected, cancelled, revoked',
+
+    customer_message TEXT NULL COMMENT 'Message from customer, for example I need login OTP',
+    admin_note TEXT NULL COMMENT 'Private admin note',
+
+    otp_code_encrypted TEXT NULL COMMENT 'Encrypted OTP/2FA code entered by admin',
+    otp_expires_at TIMESTAMP NULL COMMENT 'When this OTP/code expires',
+
+    requested_for_at TIMESTAMP NULL COMMENT 'Customer requested OTP for this login time or attempt',
+
+    provided_by BIGINT UNSIGNED NULL COMMENT 'Admin/staff who provided OTP/code',
+    provided_at TIMESTAMP NULL COMMENT 'When OTP/code was provided',
+
+    used_at TIMESTAMP NULL COMMENT 'When customer marked OTP as used',
+
+    rejected_by BIGINT UNSIGNED NULL COMMENT 'Admin/staff who rejected the request',
+    rejected_at TIMESTAMP NULL COMMENT 'When request was rejected',
+    reject_reason TEXT NULL COMMENT 'Reason for rejection',
+
+    cancelled_by BIGINT UNSIGNED NULL COMMENT 'User/admin/staff who cancelled the request',
+    cancelled_at TIMESTAMP NULL COMMENT 'When request was cancelled',
+    cancel_reason TEXT NULL COMMENT 'Reason for cancellation',
+
+    revoked_by BIGINT UNSIGNED NULL COMMENT 'Admin/staff who revoked this OTP request',
+    revoked_at TIMESTAMP NULL COMMENT 'When OTP request was revoked',
+    revoke_reason TEXT NULL COMMENT 'Reason for revoking this OTP request',
+
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    deleted_at TIMESTAMP NULL,
+
+    CONSTRAINT fk_otp_requests_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_otp_requests_order
+        FOREIGN KEY (order_id)
+        REFERENCES orders(id)
+        ON DELETE SET NULL,
+
+    CONSTRAINT fk_otp_requests_access
+        FOREIGN KEY (user_tool_access_id)
+        REFERENCES user_tool_accesses(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_otp_requests_tool
+        FOREIGN KEY (tool_id)
+        REFERENCES tools(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_otp_requests_tool_account
+        FOREIGN KEY (tool_account_id)
+        REFERENCES tool_accounts(id)
+        ON DELETE SET NULL,
+
+    CONSTRAINT fk_otp_requests_provided_by
+        FOREIGN KEY (provided_by)
+        REFERENCES users(id)
+        ON DELETE SET NULL,
+
+    CONSTRAINT fk_otp_requests_rejected_by
+        FOREIGN KEY (rejected_by)
+        REFERENCES users(id)
+        ON DELETE SET NULL,
+
+    CONSTRAINT fk_otp_requests_cancelled_by
+        FOREIGN KEY (cancelled_by)
+        REFERENCES users(id)
+        ON DELETE SET NULL,
+
+    CONSTRAINT fk_otp_requests_revoked_by
+        FOREIGN KEY (revoked_by)
+        REFERENCES users(id)
+        ON DELETE SET NULL,
+
+    INDEX idx_otp_requests_user_id (user_id),
+    INDEX idx_otp_requests_order_id (order_id),
+    INDEX idx_otp_requests_access_id (user_tool_access_id),
+    INDEX idx_otp_requests_tool_id (tool_id),
+    INDEX idx_otp_requests_tool_account_id (tool_account_id),
+    INDEX idx_otp_requests_request_type (request_type),
+    INDEX idx_otp_requests_status (status),
+    INDEX idx_otp_requests_otp_expires_at (otp_expires_at),
+    INDEX idx_otp_requests_requested_for_at (requested_for_at)
+) ENGINE=InnoDB COMMENT='Stores customer OTP/2FA requests for tool login verification with revoke/cancel lifecycle';
+
+
+-- -----------------------------------------------------
+-- ADMIN TASKS
+-- -----------------------------------------------------
+-- Helps admin/staff know what manual work must be done.
+--
+-- type examples:
+-- manual_delivery
+-- invite_user
+-- verify_payment
+-- renewal
+-- support
+-- review_required_info
+-- provide_otp
+-- provide_2fa
+-- approve_device
+-- device_reset
+--
+-- status:
+-- pending
+-- processing
+-- completed
+-- cancelled
+-- -----------------------------------------------------
+
+CREATE TABLE admin_tasks (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    user_id BIGINT UNSIGNED NULL COMMENT 'Related customer',
+    order_id BIGINT UNSIGNED NULL COMMENT 'Related order',
+    user_tool_access_id BIGINT UNSIGNED NULL COMMENT 'Related access record',
+    otp_request_id BIGINT UNSIGNED NULL COMMENT 'Related OTP/2FA request',
+    device_reset_request_id BIGINT UNSIGNED NULL COMMENT 'Related device reset request',
+
+    title VARCHAR(255) NOT NULL COMMENT 'Task title',
+    description TEXT NULL COMMENT 'Task details',
+
+    type VARCHAR(50) NOT NULL DEFAULT 'manual_delivery'
+        COMMENT 'manual_delivery, invite_user, verify_payment, renewal, support, review_required_info, provide_otp, provide_2fa, approve_device, device_reset',
+
+    priority VARCHAR(30) NOT NULL DEFAULT 'medium'
+        COMMENT 'low, medium, high, urgent',
+
+    status VARCHAR(30) NOT NULL DEFAULT 'pending'
+        COMMENT 'pending, processing, completed, cancelled',
+
+    assigned_to BIGINT UNSIGNED NULL COMMENT 'Admin/staff assigned to task',
+
+    due_at TIMESTAMP NULL COMMENT 'Task due time',
+    completed_at TIMESTAMP NULL COMMENT 'Task completion time',
+
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    deleted_at TIMESTAMP NULL,
+
+    CONSTRAINT fk_admin_tasks_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE SET NULL,
+
+    CONSTRAINT fk_admin_tasks_order
+        FOREIGN KEY (order_id)
+        REFERENCES orders(id)
+        ON DELETE SET NULL,
+
+    CONSTRAINT fk_admin_tasks_access
+        FOREIGN KEY (user_tool_access_id)
+        REFERENCES user_tool_accesses(id)
+        ON DELETE SET NULL,
+
+    CONSTRAINT fk_admin_tasks_otp_request
+        FOREIGN KEY (otp_request_id)
+        REFERENCES otp_requests(id)
+        ON DELETE SET NULL,
+
+    CONSTRAINT fk_admin_tasks_device_reset_request
+        FOREIGN KEY (device_reset_request_id)
+        REFERENCES device_reset_requests(id)
+        ON DELETE SET NULL,
+
+    CONSTRAINT fk_admin_tasks_assigned_to
+        FOREIGN KEY (assigned_to)
+        REFERENCES users(id)
+        ON DELETE SET NULL,
+
+    INDEX idx_admin_tasks_user_id (user_id),
+    INDEX idx_admin_tasks_order_id (order_id),
+    INDEX idx_admin_tasks_access_id (user_tool_access_id),
+    INDEX idx_admin_tasks_otp_request_id (otp_request_id),
+    INDEX idx_admin_tasks_device_reset_request_id (device_reset_request_id),
+    INDEX idx_admin_tasks_type (type),
+    INDEX idx_admin_tasks_status (status),
+    INDEX idx_admin_tasks_priority (priority),
+    INDEX idx_admin_tasks_assigned_to (assigned_to)
+) ENGINE=InnoDB COMMENT='Stores manual admin tasks such as invite delivery, OTP, device reset, and info review';
+
+
+-- -----------------------------------------------------
+-- SUPPORT TICKETS
+-- -----------------------------------------------------
+-- Customer support system.
+--
+-- category examples:
+-- login_issue
+-- payment_issue
+-- renewal
+-- technical
+-- delivery_issue
+-- otp_issue
+-- device_issue
+-- other
+-- -----------------------------------------------------
+
+CREATE TABLE support_tickets (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    user_id BIGINT UNSIGNED NOT NULL COMMENT 'Customer who opened ticket',
+    order_id BIGINT UNSIGNED NULL COMMENT 'Related order',
+    tool_id BIGINT UNSIGNED NULL COMMENT 'Related tool',
+    tool_account_id BIGINT UNSIGNED NULL COMMENT 'Related tool account',
+    user_tool_access_id BIGINT UNSIGNED NULL COMMENT 'Related customer access',
+
+    ticket_number VARCHAR(50) NOT NULL UNIQUE COMMENT 'Public ticket number, for example TKT-10001',
+
+    subject VARCHAR(255) NOT NULL COMMENT 'Ticket subject',
+
+    category VARCHAR(50) NOT NULL DEFAULT 'other'
+        COMMENT 'login_issue, payment_issue, renewal, technical, delivery_issue, otp_issue, device_issue, other',
+
+    priority VARCHAR(30) NOT NULL DEFAULT 'medium'
+        COMMENT 'low, medium, high, urgent',
+
+    status VARCHAR(30) NOT NULL DEFAULT 'open'
+        COMMENT 'open, pending, solved, closed',
+
+    assigned_to BIGINT UNSIGNED NULL COMMENT 'Assigned staff/admin',
+
+    last_reply_at TIMESTAMP NULL COMMENT 'Last reply time',
+    closed_at TIMESTAMP NULL COMMENT 'Ticket closing time',
+
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    deleted_at TIMESTAMP NULL,
+
+    CONSTRAINT fk_support_tickets_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_support_tickets_order
+        FOREIGN KEY (order_id)
+        REFERENCES orders(id)
+        ON DELETE SET NULL,
+
+    CONSTRAINT fk_support_tickets_tool
+        FOREIGN KEY (tool_id)
+        REFERENCES tools(id)
+        ON DELETE SET NULL,
+
+    CONSTRAINT fk_support_tickets_tool_account
+        FOREIGN KEY (tool_account_id)
+        REFERENCES tool_accounts(id)
+        ON DELETE SET NULL,
+
+    CONSTRAINT fk_support_tickets_user_tool_access
+        FOREIGN KEY (user_tool_access_id)
+        REFERENCES user_tool_accesses(id)
+        ON DELETE SET NULL,
+
+    CONSTRAINT fk_support_tickets_assigned_to
+        FOREIGN KEY (assigned_to)
+        REFERENCES users(id)
+        ON DELETE SET NULL,
+
+    INDEX idx_support_tickets_user_id (user_id),
+    INDEX idx_support_tickets_order_id (order_id),
+    INDEX idx_support_tickets_tool_id (tool_id),
+    INDEX idx_support_tickets_tool_account_id (tool_account_id),
+    INDEX idx_support_tickets_access_id (user_tool_access_id),
+    INDEX idx_support_tickets_status (status),
+    INDEX idx_support_tickets_priority (priority),
+    INDEX idx_support_tickets_assigned_to (assigned_to)
+) ENGINE=InnoDB COMMENT='Stores customer support tickets';
+
+
+-- -----------------------------------------------------
+-- SUPPORT TICKET MESSAGES
+-- -----------------------------------------------------
+-- Stores messages/replies inside support tickets.
+-- -----------------------------------------------------
+
+CREATE TABLE support_ticket_messages (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    ticket_id BIGINT UNSIGNED NOT NULL COMMENT 'Related ticket',
+    sender_id BIGINT UNSIGNED NOT NULL COMMENT 'Message sender',
+
+    message TEXT NOT NULL COMMENT 'Message body',
+    attachment VARCHAR(255) NULL COMMENT 'Attachment path',
+
+    is_staff_reply TINYINT(1) NOT NULL DEFAULT 0 COMMENT '1 if reply is from admin/staff',
+
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    deleted_at TIMESTAMP NULL,
+
+    CONSTRAINT fk_support_ticket_messages_ticket
+        FOREIGN KEY (ticket_id)
+        REFERENCES support_tickets(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_support_ticket_messages_sender
+        FOREIGN KEY (sender_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE,
+
+    INDEX idx_support_ticket_messages_ticket_id (ticket_id),
+    INDEX idx_support_ticket_messages_sender_id (sender_id)
+) ENGINE=InnoDB COMMENT='Stores messages inside support tickets';
+
+
+-- -----------------------------------------------------
+-- ANNOUNCEMENTS
+-- -----------------------------------------------------
+-- Admin notices for users.
+--
+-- type:
+-- info
+-- warning
+-- maintenance
+-- success
+--
+-- visible_to:
+-- all
+-- customers
+-- staff
+-- admins
+-- -----------------------------------------------------
+
+CREATE TABLE announcements (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    title VARCHAR(255) NOT NULL COMMENT 'Announcement title',
+    message TEXT NOT NULL COMMENT 'Announcement message',
+
+    type VARCHAR(30) NOT NULL DEFAULT 'info'
+        COMMENT 'info, warning, maintenance, success',
+
+    status VARCHAR(30) NOT NULL DEFAULT 'active'
+        COMMENT 'active, inactive',
+
+    visible_to VARCHAR(30) NOT NULL DEFAULT 'all'
+        COMMENT 'all, customers, staff, admins',
+
+    starts_at TIMESTAMP NULL COMMENT 'Visible from',
+    ends_at TIMESTAMP NULL COMMENT 'Visible until',
+
+    created_by BIGINT UNSIGNED NULL COMMENT 'Admin/staff who created announcement',
+
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    deleted_at TIMESTAMP NULL,
+
+    CONSTRAINT fk_announcements_created_by
+        FOREIGN KEY (created_by)
+        REFERENCES users(id)
+        ON DELETE SET NULL,
+
+    INDEX idx_announcements_status (status),
+    INDEX idx_announcements_type (type),
+    INDEX idx_announcements_visible_to (visible_to),
+    INDEX idx_announcements_starts_at (starts_at),
+    INDEX idx_announcements_ends_at (ends_at)
+) ENGINE=InnoDB COMMENT='Stores announcements and maintenance notices';
+
+
+-- -----------------------------------------------------
+-- ACTIVITY LOGS
+-- -----------------------------------------------------
+-- Tracks important actions.
+--
+-- Example:
+-- Payment verified
+-- Access assigned
+-- Invite sent
+-- Required info approved
+-- OTP provided
+-- Device reset approved
+-- Access revoked
+-- -----------------------------------------------------
+
+CREATE TABLE activity_logs (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    user_id BIGINT UNSIGNED NULL COMMENT 'User who performed action',
+
+    action VARCHAR(150) NOT NULL COMMENT 'Action name',
+    description TEXT NULL COMMENT 'Human-readable activity description',
+
+    subject_type VARCHAR(150) NULL COMMENT 'Related model/table name',
+    subject_id BIGINT UNSIGNED NULL COMMENT 'Related record ID',
+
+    ip_address VARCHAR(45) NULL COMMENT 'IP address',
+    user_agent TEXT NULL COMMENT 'Browser/device user agent',
+
+    metadata JSON NULL COMMENT 'Extra data in JSON',
+
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+
+    CONSTRAINT fk_activity_logs_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE SET NULL,
+
+    INDEX idx_activity_logs_user_id (user_id),
+    INDEX idx_activity_logs_action (action),
+    INDEX idx_activity_logs_subject (subject_type, subject_id)
+) ENGINE=InnoDB COMMENT='Stores system activity logs';

@@ -1,0 +1,1400 @@
+﻿Full Business Description
+This business is a digital tool subscription access management business.
+The owner/admin manages premium online tools, software subscriptions, team workspaces, shared accounts, invite-only accounts, and manual-access products. Then the business sells access to customers as either single-tool products or multi-tool bundles.
+The platform is built so the admin can manage the full business from one dashboard: tools, subscriptions, packages, customers, orders, payments, required customer information, access delivery, OTP/2FA requests, device limits, support tickets, renewals, and staff tasks.
+The business is not just a normal ecommerce shop. It is an access management system for digital tools.
+Simple One-Line Explanation
+This is a platform where an admin sells access to premium digital tools, manages customer orders and payments, assigns tool access manually or automatically, handles invite-only tools, OTP/2FA, device limits, support, and renewals from one dashboard.
+What the Business Sells
+The business sells access to digital tools.
+Examples of tools:
+ChatGPT
+Claude
+Ahrefs
+Moz
+Semrush
+Canva
+Grammarly
+QuillBot
+Envato
+Freepik
+Notion
+Developer AI tools
+SEO tools
+Marketing tools
+Content writing tools
+Design tools
+
+The business can sell:
+Single tool access
+Multi-tool bundle access
+Invite-only access
+Credential-based access
+Instruction-based access
+Manual delivery access
+Trial access
+Bonus access
+Replacement access
+Temporary access
+Monthly access
+
+Main Business Example
+The admin creates a package called:
+SEO Bundle - 30 Days
+
+This bundle may include:
+Ahrefs
+Moz
+Semrush
+ChatGPT
+Canva Team
+
+A customer buys the SEO Bundle.
+Some tools may be delivered instantly:
+ChatGPT - credential/instruction delivered
+Moz - credential/instruction delivered
+
+Some tools may require manual admin action:
+Canva Team - admin must invite customer by email
+Ahrefs - admin may need to assign an available account
+
+Some tools may require OTP or 2FA:
+Tool sends OTP to owner email
+Admin receives OTP
+Customer requests OTP from dashboard
+Admin provides OTP through admin panel
+
+Some tools may have device limits:
+Only one device allowed
+Only one browser allowed
+Limited number of active sessions
+Admin may need to approve or reset devices
+
+The platform tracks all of this.
+Main People in the Business
+1. Admin / Owner
+The admin is the main business owner.
+The admin controls:
+Tools
+Tool accounts
+Packages
+Bundles
+Customers
+Orders
+Payments
+Access delivery
+Invite-only products
+OTP/2FA requests
+Device restrictions
+Support tickets
+Announcements
+Renewals
+Staff tasks
+Activity logs
+
+The admin is the most important user in the system.
+2. Staff / Manager
+Staff help the admin operate the business.
+Staff can handle:
+Payment verification
+Customer support
+Manual access delivery
+Invite sending
+OTP/2FA requests
+Device approval
+Required information review
+Renewal tracking
+Support ticket replies
+
+Later, the system can add permission control so each staff member only sees allowed sections.
+3. Customer
+The customer buys access.
+The customer can:
+Register/login
+Browse packages
+Buy single tools or bundles
+Submit payment proof
+Submit required product information
+View active tools
+View access instructions
+Request OTP/2FA
+Request device reset
+Open support tickets
+Renew access
+See announcements
+
+Core Business Objects
+1. Tool
+A tool is the actual software or service.
+Examples:
+ChatGPT
+Ahrefs
+Canva
+Semrush
+Claude
+Grammarly
+
+Each tool can have a category.
+Example:
+Category: SEO Tools
+Tools: Ahrefs, Moz, Semrush
+
+Category: AI Tools
+Tools: ChatGPT, Claude, Gemini
+
+Category: Design Tools
+Tools: Canva, Freepik, Envato
+
+Each tool can also have a delivery/access type.
+Tool Access Types
+Different tools work differently. So every tool should have an access type.
+1. Credential Access
+The customer receives login details or access instructions.
+Example:
+ChatGPT shared access
+Moz account access
+Grammarly account access
+
+Customer sees access in dashboard after payment and approval.
+2. Invite Access
+The customer cannot use the tool instantly. Admin must invite the customer manually.
+Example:
+Canva Team
+Notion Workspace
+Team-based AI tool
+Developer workspace
+
+Customer may need to submit an invite email first.
+3. Instruction Access
+The customer receives instructions instead of direct credentials.
+Example:
+Private dashboard link
+Browser profile instruction
+Remote access instruction
+Special workflow guide
+
+4. Manual Access
+The admin must manually process the access.
+Example:
+Custom workspace setup
+Special account configuration
+Manual license activation
+
+5. External Access
+The access is managed outside the platform, but the platform tracks the order and delivery status.
+Example:
+Third-party reseller panel
+External dashboard
+Partner-managed account
+
+2. Tool Account
+A tool account is one subscription, account, license, or workspace that the admin owns or manages.
+Example:
+Tool: ChatGPT
+
+Tool Accounts:
+- ChatGPT Pro Account 1
+- ChatGPT Pro Account 2
+- ChatGPT Team Workspace 1
+
+Another example:
+Tool: Ahrefs
+
+Tool Accounts:
+- Ahrefs Account 1
+- Ahrefs Account 2
+
+Each tool account can store:
+Login email
+Encrypted password
+Recovery email
+Account URL
+Subscription type
+Purchase price
+Renewal price
+Purchase date
+Renewal date
+Expiry date
+Maximum users
+Used slots
+Device limits
+OTP/2FA settings
+Status
+Issue notes
+Admin notes
+
+The admin uses tool accounts to know:
+Which account is active
+Which account is expired
+Which account is full
+Which account has available slots
+Which account needs renewal
+Which account has login issues
+Which account requires OTP
+Which account has device restrictions
+
+3. Package
+A package is what the customer buys.
+A package can be:
+Single package
+Bundle package
+
+Single Tool Package
+A single package contains one tool.
+Example:
+ChatGPT Pro Access - 30 Days
+Canva Team Invite - 30 Days
+Ahrefs Access - 7 Days
+
+Bundle Package
+A bundle package contains multiple tools.
+Example:
+SEO Bundle - 30 Days
+
+Includes:
+- Ahrefs
+- Moz
+- Semrush
+- ChatGPT
+
+Another example:
+Developer AI Bundle - 30 Days
+
+Includes:
+- ChatGPT
+- Claude
+- Gemini
+- Coding assistant tools
+
+Another example:
+Creator Bundle - 30 Days
+
+Includes:
+- Canva
+- Grammarly
+- ChatGPT
+- Freepik
+
+Package Delivery Types
+A package can have one of these delivery types:
+1. Auto Delivery
+Access can be delivered after payment verification and required information approval.
+Example:
+ChatGPT Access - 30 Days
+
+2. Manual Delivery
+Admin must manually deliver the product.
+Example:
+Canva Team Invite - 30 Days
+
+3. Mixed Delivery
+The package contains both instant and manual tools.
+Example:
+SEO + Design Bundle
+
+ChatGPT - delivered
+Moz - delivered
+Canva Team - pending invite
+Ahrefs - manual assignment
+
+This is very important because one package can contain different types of tools.
+4. Custom Product Fields
+Some products need extra information from the customer before the admin can process the order.
+For example, if the product is invite-only, the admin may need the customer’s email.
+Example package:
+Canva Team Invite - 30 Days
+
+Required fields:
+Invite Email
+Full Name
+
+Another example:
+SEO Report Service
+
+Required fields:
+Website URL
+Target country
+Main keywords
+Competitor website
+
+Another example:
+Developer Workspace Invite
+
+Required fields:
+Work email
+GitHub username
+Company name
+
+The admin can define custom fields per package.
+Field types can include:
+Text
+Email
+Number
+Textarea
+URL
+Select
+Checkbox
+Radio
+Date
+File upload
+
+This makes the product system flexible.
+5. Order
+An order is created when a customer buys a package.
+An order stores:
+Customer
+Package
+Order number
+Amount
+Discount
+Payable amount
+Payment method
+Payment status
+Order status
+Required information status
+Start date
+Expiry date
+Customer note
+Admin note
+Renewal relation
+
+Order statuses:
+pending
+active
+expired
+cancelled
+
+Payment statuses:
+pending
+paid
+failed
+refunded
+
+Required information statuses:
+not_required
+pending
+submitted
+approved
+rejected
+
+6. Payment
+Payments are tracked separately from orders.
+This is useful for manual payment systems such as:
+bKash
+Nagad
+Rocket
+Bank transfer
+Manual payment
+Card/payment gateway
+
+A payment can store:
+Order
+Customer
+Amount
+Payment method
+Transaction ID
+Sender number
+Screenshot
+Status
+Verified by
+Verified at
+Reject reason
+Admin note
+
+Payment statuses:
+pending
+verified
+rejected
+
+7. User Tool Access
+This is the most important part of the business.
+A user tool access record means:
+This customer has access to this tool through this account.
+
+Example:
+Customer: Rahim
+Tool: ChatGPT
+Tool Account: ChatGPT Pro Account 1
+Status: Active
+Delivery Status: Delivered
+Expires: 15 June 2026
+
+For a bundle, one order creates multiple access records.
+Example:
+Customer buys SEO Bundle.
+
+System/admin creates:
+- Rahim -> Ahrefs -> Ahrefs Account 1
+- Rahim -> Moz -> Moz Account 1
+- Rahim -> Semrush -> Semrush Account 2
+- Rahim -> ChatGPT -> ChatGPT Account 3
+
+Each access record can track:
+Customer
+Order
+Tool
+Tool account
+Source
+Access status
+Delivery status
+Invite email
+Start date
+Expiry date
+Delivery time
+Invite time
+Access note
+Delivery note
+Internal note
+Last accessed time
+Revoked reason
+Created by admin/staff
+
+Access source can be:
+order
+manual
+bonus
+replacement
+trial
+
+Access status can be:
+active
+expired
+suspended
+revoked
+
+Delivery status can be:
+pending
+processing
+delivered
+failed
+cancelled
+
+This separation is important.
+An access can be active but not yet delivered.
+Example:
+Payment is paid.
+Access period is active.
+But Canva invite is still pending.
+
+So:
+access status = active
+delivery status = pending
+
+Full Customer Order Flow
+Step 1: Customer Chooses Package
+Customer selects a product.
+Example:
+Canva Team Invite - 30 Days
+
+or:
+SEO Bundle - 30 Days
+
+Step 2: System Creates Order
+The system creates an order:
+Order number: ORD-10001
+Customer: Rahim
+Package: SEO Bundle
+Payment status: pending
+Order status: pending
+
+If the package needs extra information:
+required_info_status = pending
+
+If not:
+required_info_status = not_required
+
+Step 3: Customer Submits Required Information
+If the product has custom fields, the customer fills them.
+Example:
+Invite Email: rahim@example.com
+Full Name: Rahim Ahmed
+
+Then:
+required_info_status = submitted
+
+Admin reviews the information.
+If correct:
+required_info_status = approved
+
+If wrong:
+required_info_status = rejected
+
+Customer may need to submit again.
+Step 4: Customer Pays
+Customer pays using a method like:
+bKash
+Nagad
+Rocket
+Bank
+Card
+Manual
+
+Customer submits:
+Transaction ID
+Sender number
+Payment screenshot
+
+Payment status becomes:
+pending
+
+Admin verifies payment.
+If valid:
+payment_status = paid
+payment record status = verified
+
+If invalid:
+payment_status = failed
+payment record status = rejected
+
+Step 5: System Checks If Order Is Ready
+The order can be processed only when:
+Payment status = paid
+
+AND
+
+Required information status = not_required OR approved
+
+Then access creation can start.
+Step 6: Access Is Created
+For every tool in the package, the system/admin creates a user tool access record.
+Example bundle:
+SEO Bundle contains:
+- Ahrefs
+- Moz
+- Semrush
+- ChatGPT
+- Canva Team
+
+Access records:
+Rahim -> Ahrefs
+Rahim -> Moz
+Rahim -> Semrush
+Rahim -> ChatGPT
+Rahim -> Canva Team
+
+Each tool may have a different delivery method.
+Step 7: Access Is Delivered
+For credential or instruction tools:
+delivery_status = delivered
+
+For invite-only or manual tools:
+delivery_status = pending
+
+Admin task is created.
+Example:
+Task: Invite Rahim to Canva Team
+Type: invite_user
+Status: pending
+
+When admin completes the invite:
+delivery_status = delivered
+delivered_at = now
+
+Admin Workflow
+This section explains exactly how the business works for admin.
+Admin Setup Flow
+Step 1: Create Tool Categories
+Admin first creates categories.
+Examples:
+SEO Tools
+AI Tools
+Design Tools
+Developer Tools
+Content Writing Tools
+Marketing Tools
+Productivity Tools
+
+Purpose:
+Categories help organize tools and packages.
+
+Step 2: Create Tools
+Admin adds tools.
+Example:
+Tool Name: ChatGPT
+Category: AI Tools
+Access Type: credential
+OTP Required: yes
+Device Restriction: yes
+
+Another example:
+Tool Name: Canva Team
+Category: Design Tools
+Access Type: invite
+OTP Required: no
+Device Restriction: no
+
+Another example:
+Tool Name: Ahrefs
+Category: SEO Tools
+Access Type: manual
+OTP Required: yes
+Device Restriction: yes
+
+Admin defines:
+Tool name
+Category
+Website URL
+Logo
+Description
+Access type
+OTP/2FA requirement
+Device restriction policy
+Status
+
+Step 3: Add Tool Accounts
+Admin adds subscription accounts for tools.
+Example:
+Tool: ChatGPT
+Account Name: ChatGPT Pro Account 1
+Login Email: owner-chatgpt1@example.com
+Password: encrypted
+Max Users: 5
+Used Slots: 0
+Renewal Date: 2026-06-15
+OTP Required: yes
+Device Restriction: yes
+Max Devices: 5
+
+Tool account statuses:
+active
+expired
+full
+disabled
+issue
+
+Admin uses this section to know:
+Which accounts are available
+Which accounts are full
+Which accounts need renewal
+Which accounts have login issues
+Which accounts need OTP
+Which accounts have device limits
+
+Step 4: Create Packages
+Admin creates sellable packages.
+Single package example:
+Package Name: ChatGPT Pro Access - 30 Days
+Type: single
+Delivery Type: auto
+Price: 350 BDT
+Duration: 30 days
+
+Bundle package example:
+Package Name: SEO Bundle - 30 Days
+Type: bundle
+Delivery Type: mixed
+Price: 700 BDT
+Duration: 30 days
+
+Admin then attaches tools to the package.
+Example:
+SEO Bundle includes:
+- Ahrefs
+- Moz
+- Semrush
+- ChatGPT
+
+Step 5: Add Custom Product Fields
+If a package needs customer information, admin adds custom fields.
+Example:
+Package: Canva Team Invite - 30 Days
+
+Fields:
+- Invite Email, required, email
+- Full Name, optional, text
+
+Example:
+Package: SEO Report
+
+Fields:
+- Website URL, required, URL
+- Target Country, required, select
+- Keywords, required, textarea
+
+This lets the admin collect the exact information needed before processing.
+Admin Daily Operation Flow
+1. Check Dashboard
+Admin dashboard should show:
+Total customers
+Active orders
+Pending orders
+Pending payments
+Submitted required information
+Ready for delivery orders
+Pending invite tasks
+Pending OTP requests
+Pending 2FA requests
+Pending device approvals
+Device reset requests
+Open support tickets
+Expiring customer access
+Expiring tool accounts
+Accounts with issues
+Revenue summary
+
+This helps admin know what needs attention first.
+2. Verify Payments
+Admin goes to:
+Payments -> Pending Payments
+
+Admin checks:
+Order number
+Customer
+Payment method
+Amount
+Transaction ID
+Sender number
+Screenshot
+
+If valid:
+Payment status = verified
+Order payment_status = paid
+
+If invalid:
+Payment status = rejected
+Order payment_status = failed
+Reject reason added
+
+After payment is paid, the system checks whether required information is approved or not needed.
+3. Review Required Customer Information
+Admin goes to:
+Orders -> Submitted Info Review
+
+Admin checks customer-submitted data.
+Example:
+Invite Email: rahim@example.com
+Full Name: Rahim Ahmed
+
+If correct:
+required_info_status = approved
+
+If incorrect:
+required_info_status = rejected
+Reject reason: Invalid invite email
+
+Customer is asked to submit again.
+4. Process Ready Orders
+An order is ready when:
+payment_status = paid
+AND
+required_info_status = not_required OR approved
+
+Admin/system then creates access records.
+For each tool in the package:
+Create user_tool_access
+Assign tool account if needed
+Set start date
+Set expiry date
+Set status
+Set delivery status
+
+5. Assign Tool Account
+Admin selects an available account.
+Example:
+Customer: Rahim
+Tool: ChatGPT
+Available Account: ChatGPT Pro Account 2
+Max Users: 5
+Used Slots: 3
+
+Admin assigns account.
+Then:
+used_slots increases by 1
+
+If account reaches max users:
+status = full
+
+When access expires or is revoked:
+used_slots decreases
+
+6. Handle Manual or Invite-Only Delivery
+If the tool requires manual action, admin task is created.
+Example:
+Task: Invite Rahim to Canva Team
+Type: invite_user
+Status: pending
+
+Admin opens the task, sends invite manually, and updates:
+delivery_status = delivered
+invited_at = now
+delivered_at = now
+task status = completed
+
+Customer then sees:
+Canva Team - Delivered
+Invite sent to rahim@example.com
+
+OTP / 2FA Management
+Some tools require OTP or 2FA during login.
+Examples:
+Email OTP received by owner
+SMS OTP received by owner
+Authenticator code from owner app
+Backup code
+Device approval
+Manual login approval
+
+The customer cannot receive these directly, so the system supports OTP requests.
+Customer OTP Flow
+Customer tries to log in.
+Tool asks for OTP.
+Customer clicks:
+Request OTP
+
+System creates:
+OTP request
+Admin task
+
+Admin sees:
+Provide OTP for Rahim - Ahrefs Account 1
+
+Admin checks owner email/phone/authenticator app.
+Admin enters OTP into system.
+Customer sees OTP in dashboard.
+The OTP expires after a short time.
+Admin OTP Flow
+Admin dashboard shows:
+Pending OTP Requests
+
+Admin opens request:
+Customer: Rahim
+Tool: Ahrefs
+Account: Ahrefs Account 1
+Request Type: Email OTP
+Status: pending
+
+Admin provides:
+OTP Code
+Expiry time
+Admin note
+
+System updates:
+otp_requests.status = completed
+provided_by = admin
+provided_at = now
+otp_expires_at = short expiry
+
+Customer uses the OTP.
+OTP Request Types
+email_otp
+sms_otp
+authenticator_2fa
+backup_code
+device_approval
+manual
+
+OTP Security Rules
+Admin should follow:
+Store OTP encrypted
+Auto-expire OTP quickly
+Do not show expired OTP
+Do not show 2FA secret to customers
+Do not show backup codes to customers unless intentionally allowed
+Log every OTP action
+Rate-limit OTP requests
+Only admin/staff can provide OTP
+
+Device Restriction Management
+Some tools limit:
+Number of devices
+Number of browsers
+Number of sessions
+Number of IP addresses
+Number of simultaneous users
+
+The platform tracks device usage.
+Device Example
+Tool account:
+ChatGPT Account 1
+Max Users: 5
+Max Devices: 5
+Used Devices: 4
+
+A customer uses a new device.
+If device space is available:
+Device is registered
+used_devices increases by 1
+device status = active
+
+If device limit is full:
+Device status = pending_approval
+Admin task is created
+
+User Device Data
+The system can track:
+Customer
+Tool access
+Tool account
+Device name
+Device type
+Browser
+Operating system
+IP address
+User agent
+Device fingerprint
+Status
+First used time
+Last used time
+Approval data
+Removal data
+
+Device statuses:
+active
+pending_approval
+blocked
+removed
+expired
+
+Device Reset Flow
+Customer changes device or browser.
+Customer clicks:
+Request Device Reset
+
+System creates:
+Device reset request
+Admin task
+
+Admin reviews.
+If approved:
+Old device status = removed
+used_devices decreases
+Device reset request = approved/completed
+
+Then customer can register a new device.
+Admin Device Management
+Admin can see:
+Active devices
+Pending device approvals
+Blocked devices
+Removed devices
+Device reset requests
+
+Admin actions:
+Approve device
+Reject device
+Remove device
+Block device
+Approve reset
+Reject reset
+
+Support System
+Customers can open tickets for problems.
+Ticket categories:
+login_issue
+payment_issue
+renewal
+technical
+delivery_issue
+otp_issue
+device_issue
+other
+
+Example ticket:
+Subject: Canva invite not received
+Category: delivery_issue
+Status: open
+
+Admin/staff can reply and close the ticket when solved.
+Support tickets can be linked to:
+Order
+Tool
+Tool account
+User tool access
+
+This makes support easier because admin can see the exact access/order related to the problem.
+Admin Tasks
+Admin tasks are internal work items.
+They help staff know what to do.
+Task examples:
+Verify payment
+Review required information
+Invite customer to tool
+Manually deliver access
+Provide OTP
+Provide 2FA
+Approve device
+Process device reset
+Renew tool account
+Handle support issue
+
+Task statuses:
+pending
+processing
+completed
+cancelled
+
+Task priorities:
+low
+medium
+high
+urgent
+
+Admin tasks are created automatically in many cases.
+Examples:
+Customer submits required info -> task: review_required_info
+Customer buys invite-only tool -> task: invite_user
+Customer requests OTP -> task: provide_otp
+Customer requests device reset -> task: device_reset
+Tool account renewal date is near -> task: renewal
+
+This prevents admin from forgetting manual work.
+Announcements
+Admin can publish announcements.
+Examples:
+Ahrefs Account 2 is under maintenance.
+Canva invite delivery may take longer today.
+Payment verification is delayed.
+New SEO Bundle added.
+
+Announcement types:
+info
+warning
+maintenance
+success
+
+Visibility options:
+all
+customers
+staff
+admins
+
+Activity Logs
+The system logs important actions.
+Examples:
+Admin verified payment
+Admin rejected payment
+Customer submitted required info
+Admin approved required info
+Access created
+Access delivered
+Access revoked
+OTP requested
+OTP provided
+Device approved
+Device reset approved
+Support ticket opened
+Tool account updated
+
+Activity logs help with:
+Audit history
+Dispute solving
+Staff accountability
+Security tracking
+Debugging business issues
+
+Complete Example: Invite-Only Product
+Product
+Canva Team Invite - 30 Days
+Price: 250 BDT
+Type: single
+Delivery Type: manual
+Tool Access Type: invite
+
+Required Customer Fields
+Invite Email
+Full Name
+
+Full Flow
+1. Admin creates Canva tool.
+2. Admin sets access_type = invite.
+3. Admin creates Canva Team package.
+4. Admin adds custom fields: Invite Email, Full Name.
+5. Customer buys Canva Team Invite.
+6. Order is created.
+7. required_info_status = pending.
+8. Customer submits invite email.
+9. required_info_status = submitted.
+10. Admin reviews and approves information.
+11. Customer submits payment.
+12. Admin verifies payment.
+13. payment_status = paid.
+14. System checks order is ready.
+15. Access record is created.
+16. delivery_status = pending.
+17. Admin task is created: Invite customer to Canva Team.
+18. Admin sends invite manually.
+19. Admin marks task completed.
+20. delivery_status = delivered.
+21. Customer sees Canva invite delivered.
+
+Complete Example: Mixed Bundle
+Product
+SEO Bundle - 30 Days
+Price: 700 BDT
+Type: bundle
+Delivery Type: mixed
+
+Tools Included
+Ahrefs
+Moz
+Semrush
+ChatGPT
+Canva Team
+
+Delivery Behavior
+Ahrefs      -> manual or credential
+Moz         -> credential
+Semrush     -> credential
+ChatGPT     -> credential + OTP possible
+Canva Team  -> invite
+
+Full Flow
+1. Customer buys SEO Bundle.
+2. Customer pays.
+3. Admin verifies payment.
+4. System creates one access record for each tool.
+5. Moz, Semrush, ChatGPT may be delivered.
+6. Ahrefs may stay pending until admin assigns account.
+7. Canva Team stays pending until admin sends invite.
+8. Customer dashboard shows delivered and pending tools separately.
+9. Admin completes pending tasks.
+10. All delivery statuses become delivered.
+
+Customer dashboard example:
+Ahrefs      - Pending Delivery
+Moz         - Delivered
+Semrush     - Delivered
+ChatGPT     - Delivered
+Canva Team  - Pending Invite
+
+After admin finishes:
+Ahrefs      - Delivered
+Moz         - Delivered
+Semrush     - Delivered
+ChatGPT     - Delivered
+Canva Team  - Delivered
+
+Complete Example: OTP Required
+Scenario
+Customer has Ahrefs access.
+Ahrefs sends OTP to owner email during login.
+
+Flow
+1. Customer tries to log in.
+2. Ahrefs asks for email OTP.
+3. Customer clicks Request OTP.
+4. System creates OTP request.
+5. System creates admin task.
+6. Admin checks owner email.
+7. Admin enters OTP into admin panel.
+8. Customer sees OTP in dashboard.
+9. Customer uses OTP.
+10. OTP request is completed or expires.
+
+Complete Example: Device Limit
+Scenario
+Tool account allows only 1 device.
+Customer wants to use a new device.
+
+Flow
+1. Customer opens tool access from new device.
+2. System detects new device/browser/IP/fingerprint.
+3. System checks max device limit.
+4. If limit is available, device is active.
+5. If limit is full, device becomes pending approval.
+6. Admin task is created.
+7. Admin approves or rejects.
+8. Customer can request device reset if needed.
+
+Admin Dashboard Recommended Sections
+Dashboard
+
+Users
+- Customers
+- Staff
+
+Tools
+- Categories
+- Tools
+- Tool Accounts
+
+Packages
+- All Packages
+- Package Tools
+- Custom Fields
+
+Orders
+- All Orders
+- Pending Payment
+- Pending Required Info
+- Submitted Info Review
+- Ready for Delivery
+- Active Orders
+- Expired Orders
+- Cancelled Orders
+
+Payments
+- Pending Payments
+- Verified Payments
+- Rejected Payments
+
+Access Management
+- All Accesses
+- Pending Delivery
+- Delivered Accesses
+- Expiring Soon
+- Suspended Accesses
+- Revoked Accesses
+
+OTP / 2FA
+- Pending OTP Requests
+- Completed OTP Requests
+- Expired OTP Requests
+
+Device Management
+- Active Devices
+- Pending Device Approvals
+- Device Reset Requests
+- Blocked Devices
+
+Admin Tasks
+- Pending Tasks
+- My Tasks
+- Invite Tasks
+- Manual Delivery Tasks
+- Required Info Review
+- OTP Tasks
+- Device Tasks
+- Renewal Tasks
+
+Support
+- Open Tickets
+- Pending Tickets
+- Solved Tickets
+- Closed Tickets
+
+Announcements
+
+Activity Logs
+
+Settings
+
+Admin Dashboard Important Widgets
+The admin dashboard should show:
+Today’s orders
+Today’s revenue
+Pending payments
+Orders waiting for customer information
+Orders waiting for admin review
+Orders ready for delivery
+Pending invite tasks
+Pending manual delivery tasks
+Pending OTP requests
+Pending 2FA requests
+Pending device approvals
+Device reset requests
+Open support tickets
+Tool accounts expiring soon
+Customer access expiring soon
+Full tool accounts
+Tool accounts with issues
+
+Business Rules
+Order Processing Rule
+Access should start only when:
+payment_status = paid
+AND
+required_info_status IN (not_required, approved)
+
+Access Creation Rule
+For each tool in the package:
+Create one user_tool_access record
+
+Account Slot Rule
+When a user is assigned to a tool account:
+tool_accounts.used_slots increases by 1
+
+When access expires or is revoked:
+tool_accounts.used_slots decreases by 1
+
+Account Full Rule
+If:
+used_slots >= max_users
+
+Then:
+tool account status = full
+
+Delivery Rule
+If tool access type is:
+credential or instruction
+
+Then access can be delivered.
+If tool access type is:
+invite or manual
+
+Then admin task is needed.
+OTP Rule
+If tool/account requires OTP:
+Customer can request OTP from dashboard.
+Admin provides OTP.
+OTP expires quickly.
+
+Device Rule
+If tool/account has device restriction:
+Track devices.
+Respect max device limit.
+Require approval/reset if needed.
+
+Renewal Rule
+When order/access expires:
+order_status = expired
+user_tool_access.status = expired
+
+Customer can renew.
+If renewed:
+New order is created
+renewed_from_order_id stores previous order
+Access date extends or new access is created
+
+Why This Business Needs a Platform
+Without a platform, the admin may manage everything manually using:
+Excel sheets
+WhatsApp messages
+Telegram groups
+Payment screenshots
+Password notes
+Manual expiry tracking
+Manual support messages
+Unclear OTP handling
+Unclear device tracking
+
+This becomes difficult as customers grow.
+The platform solves this by centralizing:
+Customer records
+Tool records
+Subscription accounts
+Package and bundle selling
+Payment verification
+Required information collection
+Access assignment
+Manual delivery tasks
+OTP/2FA request handling
+Device limit management
+Support tickets
+Announcements
+Renewals
+Activity history
+
+Main Benefits for Admin
+Know who bought what
+Know who has access to which tool
+Know which account is assigned to which customer
+Know when customer access expires
+Know when tool accounts need renewal
+Know which accounts are full
+Know which tools need manual invite
+Know which customers are waiting for delivery
+Know which OTP requests are pending
+Know which devices need approval
+Know which support tickets are open
+Reduce manual mistakes
+Reduce lost customer messages
+Improve delivery speed
+Improve customer support
+Track staff activity
+Scale the business more easily
+
+Human-Friendly Summary
+This business sells access to premium online tools. Customers can buy one tool or a bundle of tools. Some tools are delivered instantly, while others need admin action such as sending an invite, assigning an account, providing OTP, approving a device, or reviewing customer information. The admin dashboard manages everything: tools, accounts, packages, orders, payments, customer access, delivery status, OTP requests, device limits, support tickets, and renewals.
+AI-Friendly Summary
+The system is a digital subscription access management platform. Admin manages tools, tool accounts, packages, bundles, custom package fields, orders, payments, access records, manual delivery, invite-only delivery, OTP/2FA requests, device restrictions, support tickets, announcements, admin tasks, and activity logs. Customers buy packages, submit payment and required information, then receive access to one or multiple tools. Each access record tracks tool, account, delivery status, expiry, source, OTP needs, and device rules. Admin tasks are generated for manual work such as payment verification, required information review, invite delivery, OTP/2FA handling, device approval, device reset, and renewals.
