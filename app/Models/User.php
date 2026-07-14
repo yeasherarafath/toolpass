@@ -4,9 +4,8 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\ActivityLog;
 use App\Models\AdminTask;
 use App\Models\CouponUsage;
@@ -20,9 +19,12 @@ use App\Models\SupportTicket;
 use App\Models\UserToolAccess;
 use App\Models\UserToolDevice;
 use App\Models\Wallet;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
+    use HasFactory;
     use SoftDeletes;
 
     protected $table = 'users';
