@@ -8,6 +8,13 @@
 - Shared logic -> `app/Actions/Concerns/*.php` traits (`LogsActivity`, `SyncsAccountSlots`, `NotifiesUser`, `GeneratesReference`, `ResolvesOrderReadiness`, `HandlesOtpRateLimit`, `AppliesCoupon`).
 - All models: `SoftDeletes`, `$fillable`, `$casts` (JSON->`array`, dates->`datetime`), relationships matching FKs in `db.txt`.
 
+**UI KIT (locked):** Tabler (latest, Bootstrap-based) is the admin + customer UI framework.
+- Installed via npm: `@tabler/core` (CSS/JS) + `@tabler/icons-webfont` (icons).
+- Wired in `vite.config.js` (Tailwind removed), `resources/css/app.css` (`@import '@tabler/core/dist/css/tabler.min.css'` + icons), `resources/js/app.js` (`@tabler/core/dist/js/tabler.min.js`).
+- All Blade layouts extend a Tabler-based `@extends('layouts.app')` using Tabler's `.page`, `.navbar`, `.container-xl`, `.card`, `.btn`, `.table` classes.
+- Icons via `<i class="ti ti-..."></i>`.
+- Default Laravel Tailwind v4 + bunny fonts plugin removed to avoid conflicts.
+
 **Global rules (apply to every task):**
 1. Mirror `db.txt` columns/indexes/comments exactly in migrations.
 2. No destructive ALTERs; Add-Now uses appended block only.
