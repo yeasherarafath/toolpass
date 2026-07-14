@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Actions\Auth\LoginAction;
+use App\Actions\Auth\RegisterCustomerAction;
+use App\Actions\Auth\LogoutAction;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -22,19 +24,15 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
-            $request->session()->regenerate();
-            $user = Auth::user();
-
-            if ($user->status !== 'active') {
-                Auth::logout();
-                return back()->withErrors(['email' => 'Your account is ' . $user->status . '.'])->onlyInput('email');
-            }
-
-            return redirect()->intended(route($user->role . '.dashboard'));
+        try {
+            $user = app(LoginAction::class)($credentials, $request->boolean('remember'));
+        } catch (\Throwable $e) {
+            return back()->withErrors(['email' => $e->getMessage()])->onlyInput('email');
         }
 
-        return back()->withErrors(['email' => 'Invalid credentials.'])->onlyInput('email');
+        $request->session()->regenerate();
+
+        return redirect()->intended(route($user->role . '.dashboard'));
     }
 
     public function showRegister()
@@ -51,14 +49,7 @@ class AuthController extends Controller
             'password' => ['required', 'confirmed', 'min:8'],
         ]);
 
-        $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'phone' => $data['phone'] ?? null,
-            'password' => Hash::make($data['password']),
-            'role' => 'customer',
-            'status' => 'active',
-        ]);
+        $user = app(RegisterCustomerAction::class)($data);
 
         Auth::login($user);
         $request->session()->regenerate();
@@ -68,7 +59,8 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        Auth::logout();
+        app(LogoutAction::class)();
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 

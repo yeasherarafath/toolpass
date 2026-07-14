@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Actions\Admin\CreateUserAction;
+use App\Actions\Admin\ToggleUserStatusAction;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -32,27 +33,19 @@ class UserController extends Controller
             'password' => ['required', 'min:8'],
         ]);
 
-        User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'phone' => $data['phone'] ?? null,
-            'role' => $data['role'],
-            'status' => $data['status'],
-            'password' => Hash::make($data['password']),
-        ]);
+        app(CreateUserAction::class)($data);
 
         return redirect()->route('admin.users.index')->with('status', 'User created.');
     }
 
     public function toggleStatus(Request $request, User $user)
     {
-        if ($user->id === $request->user()->id && $user->role === 'admin') {
-            return back()->withErrors(['status' => 'You cannot change your own admin status.']);
+        try {
+            $message = app(ToggleUserStatusAction::class)($user, $request->user());
+        } catch (\Throwable $e) {
+            return back()->withErrors(['status' => $e->getMessage()]);
         }
 
-        $user->status = $user->status === 'active' ? 'suspended' : 'active';
-        $user->save();
-
-        return back()->with('status', 'User status updated.');
+        return back()->with('status', $message);
     }
 }
