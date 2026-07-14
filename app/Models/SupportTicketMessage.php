@@ -1,0 +1,28 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class SupportTicketMessage extends Model
+{
+    use SoftDeletes;
+
+    protected $table = 'support_ticket_messages';
+
+    protected $fillable = [
+        'ticket_id',
+        'sender_id',
+        'message',
+        'attachment',
+        'is_staff_reply',
+    ];
+
+    protected $casts = [
+
+    ];
+
+}
