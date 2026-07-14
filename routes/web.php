@@ -12,6 +12,14 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\StorefrontController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Customer\OrderController as CustomerOrderController;
+use App\Http\Controllers\Customer\OtpController as CustomerOtpController;
+use App\Http\Controllers\Customer\DeviceController as CustomerDeviceController;
+use App\Http\Controllers\Customer\SupportController as CustomerSupportController;
+use App\Http\Controllers\Admin\OtpController as AdminOtpController;
+use App\Http\Controllers\Admin\DeviceController as AdminDeviceController;
+use App\Http\Controllers\Admin\SupportController as AdminSupportController;
+use App\Http\Controllers\Admin\AdminTaskController;
+use App\Http\Controllers\Admin\AnnouncementController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -52,6 +60,21 @@ Route::middleware('auth')->group(function () {
         Route::post('/payments/{payment}/verify', [OrderController::class, 'verifyPayment'])->name('payments.verify');
         Route::post('/payments/{payment}/reject', [OrderController::class, 'rejectPayment'])->name('payments.reject');
         Route::post('/accesses/{access}/deliver', [OrderController::class, 'deliverAccess'])->name('accesses.deliver');
+
+        Route::post('/otp/{otpRequest}/provide', [AdminOtpController::class, 'provide'])->name('otp.provide');
+        Route::post('/devices/{device}/approve', [AdminDeviceController::class, 'approve'])->name('devices.approve');
+        Route::post('/device-resets/{request}/complete', [AdminDeviceController::class, 'completeReset'])->name('device-resets.complete');
+
+        Route::get('/support', [AdminSupportController::class, 'index'])->name('support.index');
+        Route::get('/support/{ticket}', [AdminSupportController::class, 'show'])->name('support.show');
+        Route::post('/support/{ticket}/reply', [AdminSupportController::class, 'reply'])->name('support.reply');
+        Route::post('/support/{ticket}/close', [AdminSupportController::class, 'close'])->name('support.close');
+
+        Route::get('/tasks', [AdminTaskController::class, 'index'])->name('tasks.index');
+        Route::get('/tasks/{task}', [AdminTaskController::class, 'show'])->name('tasks.show');
+        Route::post('/tasks/{task}/complete', [AdminTaskController::class, 'complete'])->name('tasks.complete');
+
+        Route::post('/announcements', [AnnouncementController::class, 'store'])->name('announcements.store');
     });
 
     Route::middleware('role:staff')->prefix('staff')->name('staff.')->group(function () {
@@ -66,5 +89,15 @@ Route::middleware('auth')->group(function () {
         Route::post('/orders', [CustomerOrderController::class, 'store'])->name('orders.store');
         Route::post('/orders/{order}/info', [CustomerOrderController::class, 'submitInfo'])->name('orders.info');
         Route::post('/orders/{order}/payments', [CustomerOrderController::class, 'storePayment'])->name('orders.payments');
+
+        Route::post('/otp/request', [CustomerOtpController::class, 'request'])->name('otp.request');
+        Route::get('/otp/{otpRequest}', [CustomerOtpController::class, 'show'])->name('otp.show');
+
+        Route::post('/devices/reset', [CustomerDeviceController::class, 'requestReset'])->name('devices.reset');
+
+        Route::get('/support', [CustomerSupportController::class, 'index'])->name('support.index');
+        Route::get('/support/{ticket}', [CustomerSupportController::class, 'show'])->name('support.show');
+        Route::post('/support', [CustomerSupportController::class, 'store'])->name('support.store');
+        Route::post('/support/{ticket}/reply', [CustomerSupportController::class, 'reply'])->name('support.reply');
     });
 });

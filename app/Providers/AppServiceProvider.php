@@ -24,12 +24,15 @@ use App\Events\Order\OrderCreated;
 use App\Events\Payment\PaymentVerified;
 use App\Events\Access\AccessDelivered;
 use App\Events\Access\AccessExpired;
+use App\Events\Otp\OtpProvided;
 use App\Listeners\SendWelcomeNotification;
 use App\Listeners\NotifyToolAccountAdded;
 use App\Listeners\NotifyOrderPlaced;
 use App\Listeners\NotifyPaymentVerified;
 use App\Listeners\NotifyAccessDelivered;
 use App\Listeners\NotifyAccessExpired;
+use App\Listeners\NotifyOtpProvided;
+use App\Listeners\WriteActivityLog;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -53,5 +56,7 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(PaymentVerified::class, NotifyPaymentVerified::class);
         Event::listen(AccessDelivered::class, NotifyAccessDelivered::class);
         Event::listen(AccessExpired::class, NotifyAccessExpired::class);
+        Event::listen(OtpProvided::class, NotifyOtpProvided::class);
+        Event::listen(OtpProvided::class, WriteActivityLog::class);
     }
 }

@@ -65,6 +65,11 @@ class SupportTicket extends Model
         return $this->belongsTo(UserToolAccess::class, 'user_tool_access_id');
     }
 
+    public function messages(): HasMany
+    {
+        return $this->hasMany(SupportTicketMessage::class, 'ticket_id');
+    }
+
     public function assignedTo(): BelongsTo
     {
         return $this->belongsTo(User::class, 'assigned_to');

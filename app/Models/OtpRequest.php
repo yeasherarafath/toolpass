@@ -49,7 +49,13 @@ class OtpRequest extends Model
     ];
 
     protected $casts = [
-
+        'otp_expires_at' => 'datetime',
+        'requested_for_at' => 'datetime',
+        'provided_at' => 'datetime',
+        'used_at' => 'datetime',
+        'rejected_at' => 'datetime',
+        'cancelled_at' => 'datetime',
+        'revoked_at' => 'datetime',
     ];
 
     public function user(): BelongsTo

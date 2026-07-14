@@ -82,10 +82,24 @@
                 <div class="card-header"><h3 class="card-title">Your accesses</h3></div>
                 <div class="card-body">
                     @forelse ($order->userToolAccesses as $access)
-                        <div class="mb-2">
-                            <strong>{{ $access->tool?->name }}</strong>
-                            <span class="badge bg-secondary">{{ $access->status }}</span>
-                            <span class="badge bg-info">{{ $access->delivery_status }}</span>
+                        <div class="mb-3 border p-2 rounded">
+                            <div>
+                                <strong>{{ $access->tool?->name }}</strong>
+                                <span class="badge bg-secondary">{{ $access->status }}</span>
+                                <span class="badge bg-info">{{ $access->delivery_status }}</span>
+                            </div>
+                            @if ($access->delivery_status === 'delivered')
+                                <form method="POST" action="{{ route('customer.otp.request') }}" class="d-inline">
+                                    @csrf
+                                    <input type="hidden" name="user_tool_access_id" value="{{ $access->id }}">
+                                    <button class="btn btn-sm btn-warning">Request OTP</button>
+                                </form>
+                                <form method="POST" action="{{ route('customer.devices.reset') }}" class="d-inline">
+                                    @csrf
+                                    <input type="hidden" name="user_tool_access_id" value="{{ $access->id }}">
+                                    <button class="btn btn-sm btn-outline-danger">Reset device</button>
+                                </form>
+                            @endif
                         </div>
                     @empty
                         <p class="text-secondary">Accesses will appear here after payment is verified.</p>
