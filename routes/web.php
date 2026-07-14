@@ -9,9 +9,15 @@ use App\Http\Controllers\Admin\PackageCustomFieldController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\StorefrontController;
+use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Customer\OrderController as CustomerOrderController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
+Route::get('/store', [StorefrontController::class, 'index'])->name('store.index');
+Route::get('/store/{package}', [StorefrontController::class, 'show'])->name('store.show');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -39,6 +45,13 @@ Route::middleware('auth')->group(function () {
         Route::resource('packages', PackageController::class)->except(['show']);
         Route::post('/packages/{package}/custom-fields', [PackageCustomFieldController::class, 'store'])->name('packages.custom-fields.store');
         Route::delete('/packages/{package}/custom-fields/{field}', [PackageCustomFieldController::class, 'destroy'])->name('packages.custom-fields.destroy');
+
+        Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+        Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+        Route::post('/orders/{order}/review-info', [OrderController::class, 'reviewInfo'])->name('orders.review-info');
+        Route::post('/payments/{payment}/verify', [OrderController::class, 'verifyPayment'])->name('payments.verify');
+        Route::post('/payments/{payment}/reject', [OrderController::class, 'rejectPayment'])->name('payments.reject');
+        Route::post('/accesses/{access}/deliver', [OrderController::class, 'deliverAccess'])->name('accesses.deliver');
     });
 
     Route::middleware('role:staff')->prefix('staff')->name('staff.')->group(function () {
@@ -47,5 +60,11 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('role:customer')->prefix('customer')->name('customer.')->group(function () {
         Route::get('/', [DashboardController::class, 'customer'])->name('dashboard');
+
+        Route::get('/orders', [CustomerOrderController::class, 'index'])->name('orders.index');
+        Route::get('/orders/{order}', [CustomerOrderController::class, 'show'])->name('orders.show');
+        Route::post('/orders', [CustomerOrderController::class, 'store'])->name('orders.store');
+        Route::post('/orders/{order}/info', [CustomerOrderController::class, 'submitInfo'])->name('orders.info');
+        Route::post('/orders/{order}/payments', [CustomerOrderController::class, 'storePayment'])->name('orders.payments');
     });
 });

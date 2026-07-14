@@ -12,6 +12,7 @@ use App\Models\PackageTool;
 use App\Models\Review;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Package extends Model
 {
@@ -65,5 +66,17 @@ class Package extends Model
     public function reviews(): HasMany
     {
         return $this->hasMany(Review::class, 'package_id');
+    }
+
+    public function tools(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            Tool::class,
+            PackageTool::class,
+            'package_id',
+            'id',
+            'id',
+            'tool_id'
+        );
     }
 }

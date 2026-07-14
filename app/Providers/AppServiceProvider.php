@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use App\Models\User;
 use App\Models\ToolAccount;
@@ -17,6 +18,18 @@ use App\Observers\UserToolAccessObserver;
 use App\Observers\OtpRequestObserver;
 use App\Observers\DeviceResetRequestObserver;
 use App\Observers\PaymentObserver;
+use App\Events\User\UserCreated;
+use App\Events\ToolAccount\ToolAccountCreated;
+use App\Events\Order\OrderCreated;
+use App\Events\Payment\PaymentVerified;
+use App\Events\Access\AccessDelivered;
+use App\Events\Access\AccessExpired;
+use App\Listeners\SendWelcomeNotification;
+use App\Listeners\NotifyToolAccountAdded;
+use App\Listeners\NotifyOrderPlaced;
+use App\Listeners\NotifyPaymentVerified;
+use App\Listeners\NotifyAccessDelivered;
+use App\Listeners\NotifyAccessExpired;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -33,5 +46,12 @@ class AppServiceProvider extends ServiceProvider
         OtpRequest::observe(OtpRequestObserver::class);
         DeviceResetRequest::observe(DeviceResetRequestObserver::class);
         Payment::observe(PaymentObserver::class);
+
+        Event::listen(UserCreated::class, SendWelcomeNotification::class);
+        Event::listen(ToolAccountCreated::class, NotifyToolAccountAdded::class);
+        Event::listen(OrderCreated::class, NotifyOrderPlaced::class);
+        Event::listen(PaymentVerified::class, NotifyPaymentVerified::class);
+        Event::listen(AccessDelivered::class, NotifyAccessDelivered::class);
+        Event::listen(AccessExpired::class, NotifyAccessExpired::class);
     }
 }
