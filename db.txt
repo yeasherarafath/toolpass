@@ -1326,3 +1326,451 @@ CREATE TABLE activity_logs (
     INDEX idx_activity_logs_action (action),
     INDEX idx_activity_logs_subject (subject_type, subject_id)
 ) ENGINE=InnoDB COMMENT='Stores system activity logs';
+
+
+-- =====================================================================
+-- ADD-NOW SCHEMA EXTENSIONS
+-- All changes below are additive (new columns / new tables only).
+-- No existing tables or columns are dropped or altered destructively.
+-- New tables are created first so ALTER foreign keys can reference them.
+-- =====================================================================
+
+
+-- -----------------------------------------------------
+-- CURRENCIES
+-- -----------------------------------------------------
+-- Stores supported currencies and exchange rates.
+-- -----------------------------------------------------
+
+CREATE TABLE currencies (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    code CHAR(3) NOT NULL UNIQUE COMMENT 'ISO 4217 code, for example BDT, USD',
+    name VARCHAR(100) NOT NULL COMMENT 'Currency name',
+    symbol VARCHAR(10) NULL COMMENT 'Symbol, for example ৳, $',
+
+    rate DECIMAL(18,8) NOT NULL DEFAULT 1.00000000 COMMENT 'Exchange rate relative to base currency',
+    is_default TINYINT(1) NOT NULL DEFAULT 0 COMMENT '1 means base/default currency',
+
+    status VARCHAR(30) NOT NULL DEFAULT 'active' COMMENT 'active, inactive',
+
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+
+    INDEX idx_currencies_code (code),
+    INDEX idx_currencies_status (status)
+) ENGINE=InnoDB COMMENT='Stores supported currencies and exchange rates';
+
+
+-- -----------------------------------------------------
+-- TRANSLATIONS
+-- -----------------------------------------------------
+-- Stores localized strings for multilingual support.
+-- subject_type is the model/table, for example packages, announcements.
+-- -----------------------------------------------------
+
+CREATE TABLE translations (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    subject_type VARCHAR(150) NOT NULL COMMENT 'Model/table, for example packages, announcements',
+    subject_id BIGINT UNSIGNED NOT NULL COMMENT 'Related record ID',
+
+    locale VARCHAR(10) NOT NULL COMMENT 'Locale code, for example en, bn',
+    field VARCHAR(100) NOT NULL COMMENT 'Field name being translated',
+    value TEXT NULL COMMENT 'Translated value',
+
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+
+    UNIQUE KEY uq_translation (subject_type, subject_id, locale, field),
+    INDEX idx_translations_subject (subject_type, subject_id),
+    INDEX idx_translations_locale (locale)
+) ENGINE=InnoDB COMMENT='Stores localized strings for multilingual support';
+
+
+-- -----------------------------------------------------
+-- WALLETS
+-- -----------------------------------------------------
+-- Stores customer wallet balances per currency.
+-- -----------------------------------------------------
+
+CREATE TABLE wallets (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    user_id BIGINT UNSIGNED NOT NULL COMMENT 'Wallet owner (customer)',
+    currency CHAR(3) NOT NULL DEFAULT 'BDT' COMMENT 'Wallet currency',
+
+    balance DECIMAL(12,2) NOT NULL DEFAULT 0.00 COMMENT 'Available balance',
+    locked_balance DECIMAL(12,2) NOT NULL DEFAULT 0.00 COMMENT 'Balance reserved for pending orders',
+
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    deleted_at TIMESTAMP NULL,
+
+    CONSTRAINT fk_wallets_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE,
+
+    UNIQUE KEY uq_wallet_user_currency (user_id, currency),
+    INDEX idx_wallets_user_id (user_id),
+    INDEX idx_wallets_currency (currency)
+) ENGINE=InnoDB COMMENT='Stores customer wallet balances';
+
+
+-- -----------------------------------------------------
+-- WALLET TRANSACTIONS
+-- -----------------------------------------------------
+-- Stores wallet credit/debit history.
+-- -----------------------------------------------------
+
+CREATE TABLE wallet_transactions (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    wallet_id BIGINT UNSIGNED NOT NULL COMMENT 'Related wallet',
+
+    type VARCHAR(30) NOT NULL COMMENT 'credit, debit',
+    amount DECIMAL(12,2) NOT NULL DEFAULT 0.00 COMMENT 'Transaction amount',
+    balance_after DECIMAL(12,2) NOT NULL DEFAULT 0.00 COMMENT 'Wallet balance after this transaction',
+
+    ref_type VARCHAR(50) NULL COMMENT 'order, payment, refund, adjustment',
+    ref_id BIGINT UNSIGNED NULL COMMENT 'Related record ID',
+
+    note TEXT NULL COMMENT 'Human-readable note',
+
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+
+    CONSTRAINT fk_wallet_transactions_wallet
+        FOREIGN KEY (wallet_id)
+        REFERENCES wallets(id)
+        ON DELETE CASCADE,
+
+    INDEX idx_wallet_transactions_wallet_id (wallet_id),
+    INDEX idx_wallet_transactions_type (type),
+    INDEX idx_wallet_transactions_ref (ref_type, ref_id)
+) ENGINE=InnoDB COMMENT='Stores wallet credit/debit history';
+
+
+-- -----------------------------------------------------
+-- COUPONS
+-- -----------------------------------------------------
+-- Stores promotional coupons.
+-- -----------------------------------------------------
+
+CREATE TABLE coupons (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    code VARCHAR(50) NOT NULL UNIQUE COMMENT 'Public coupon code',
+
+    type VARCHAR(30) NOT NULL DEFAULT 'percent' COMMENT 'percent, fixed',
+    value DECIMAL(12,2) NOT NULL DEFAULT 0.00 COMMENT 'Percent or fixed amount',
+
+    min_amount DECIMAL(12,2) NOT NULL DEFAULT 0.00 COMMENT 'Minimum order amount to apply',
+    max_discount DECIMAL(12,2) NULL COMMENT 'Maximum discount cap for percent type',
+    currency CHAR(3) NOT NULL DEFAULT 'BDT' COMMENT 'Coupon currency',
+
+    starts_at TIMESTAMP NULL COMMENT 'Valid from',
+    ends_at TIMESTAMP NULL COMMENT 'Valid until',
+
+    usage_limit INT UNSIGNED NULL COMMENT 'Maximum number of uses, NULL = unlimited',
+    used_count INT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Times used',
+
+    status VARCHAR(30) NOT NULL DEFAULT 'active' COMMENT 'active, inactive',
+
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    deleted_at TIMESTAMP NULL,
+
+    INDEX idx_coupons_code (code),
+    INDEX idx_coupons_status (status),
+    INDEX idx_coupons_currency (currency),
+    INDEX idx_coupons_ends_at (ends_at)
+) ENGINE=InnoDB COMMENT='Stores promotional coupons';
+
+
+-- -----------------------------------------------------
+-- COUPON USAGES
+-- -----------------------------------------------------
+-- Stores per-order coupon usage.
+-- -----------------------------------------------------
+
+CREATE TABLE coupon_usages (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    coupon_id BIGINT UNSIGNED NOT NULL COMMENT 'Related coupon',
+    order_id BIGINT UNSIGNED NOT NULL COMMENT 'Order where coupon applied',
+    user_id BIGINT UNSIGNED NOT NULL COMMENT 'Customer who used coupon',
+
+    discount_amount DECIMAL(12,2) NOT NULL DEFAULT 0.00 COMMENT 'Discount applied',
+
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+
+    CONSTRAINT fk_coupon_usages_coupon
+        FOREIGN KEY (coupon_id)
+        REFERENCES coupons(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_coupon_usages_order
+        FOREIGN KEY (order_id)
+        REFERENCES orders(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_coupon_usages_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE,
+
+    UNIQUE KEY uq_coupon_usage (coupon_id, order_id),
+    INDEX idx_coupon_usages_coupon_id (coupon_id),
+    INDEX idx_coupon_usages_order_id (order_id),
+    INDEX idx_coupon_usages_user_id (user_id)
+) ENGINE=InnoDB COMMENT='Stores per-order coupon usage';
+
+
+-- -----------------------------------------------------
+-- NOTIFICATIONS
+-- -----------------------------------------------------
+-- Stores outgoing email/SMS notifications.
+-- -----------------------------------------------------
+
+CREATE TABLE notifications (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    user_id BIGINT UNSIGNED NULL COMMENT 'Recipient customer/staff',
+
+    channel VARCHAR(30) NOT NULL DEFAULT 'email' COMMENT 'email, sms',
+    type VARCHAR(50) NOT NULL COMMENT 'order_paid, access_delivered, otp_ready, expiry_warning, announcement',
+
+    subject VARCHAR(255) NULL COMMENT 'Notification subject',
+    body TEXT NULL COMMENT 'Notification body',
+
+    status VARCHAR(30) NOT NULL DEFAULT 'pending' COMMENT 'pending, sent, failed',
+    sent_at TIMESTAMP NULL COMMENT 'When sent',
+    error TEXT NULL COMMENT 'Error message if failed',
+
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+
+    CONSTRAINT fk_notifications_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE SET NULL,
+
+    INDEX idx_notifications_user_id (user_id),
+    INDEX idx_notifications_channel (channel),
+    INDEX idx_notifications_type (type),
+    INDEX idx_notifications_status (status)
+) ENGINE=InnoDB COMMENT='Stores outgoing email/SMS notifications';
+
+
+-- -----------------------------------------------------
+-- NOTIFICATION TEMPLATES
+-- -----------------------------------------------------
+-- Stores reusable notification templates.
+-- -----------------------------------------------------
+
+CREATE TABLE notification_templates (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    slug VARCHAR(100) NOT NULL UNIQUE COMMENT 'Template key, for example access_delivered',
+    channel VARCHAR(30) NOT NULL DEFAULT 'email' COMMENT 'email, sms',
+
+    subject VARCHAR(255) NULL COMMENT 'Template subject with variables',
+    body TEXT NULL COMMENT 'Template body with variables',
+    variables JSON NULL COMMENT 'Available variable names',
+
+    status VARCHAR(30) NOT NULL DEFAULT 'active' COMMENT 'active, inactive',
+
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+
+    INDEX idx_notification_templates_slug (slug),
+    INDEX idx_notification_templates_channel (channel),
+    INDEX idx_notification_templates_status (status)
+) ENGINE=InnoDB COMMENT='Stores reusable notification templates';
+
+
+-- -----------------------------------------------------
+-- REVIEWS
+-- -----------------------------------------------------
+-- Stores customer ratings and reviews.
+-- -----------------------------------------------------
+
+CREATE TABLE reviews (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    user_id BIGINT UNSIGNED NOT NULL COMMENT 'Reviewer (customer)',
+    package_id BIGINT UNSIGNED NOT NULL COMMENT 'Reviewed package',
+
+    rating TINYINT UNSIGNED NOT NULL DEFAULT 5 COMMENT 'Rating 1-5',
+    title VARCHAR(255) NULL COMMENT 'Review title',
+    body TEXT NULL COMMENT 'Review body',
+
+    status VARCHAR(30) NOT NULL DEFAULT 'pending' COMMENT 'pending, approved, rejected',
+
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    deleted_at TIMESTAMP NULL,
+
+    CONSTRAINT fk_reviews_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_reviews_package
+        FOREIGN KEY (package_id)
+        REFERENCES packages(id)
+        ON DELETE CASCADE,
+
+    INDEX idx_reviews_user_id (user_id),
+    INDEX idx_reviews_package_id (package_id),
+    INDEX idx_reviews_status (status),
+    INDEX idx_reviews_rating (rating)
+) ENGINE=InnoDB COMMENT='Stores customer ratings and reviews';
+
+
+-- -----------------------------------------------------
+-- PACKAGE CONTENTS
+-- -----------------------------------------------------
+-- Stores storefront content sections for packages.
+-- sections: includes, faq, highlights, seo
+-- -----------------------------------------------------
+
+CREATE TABLE package_contents (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    package_id BIGINT UNSIGNED NOT NULL COMMENT 'Related package',
+
+    section VARCHAR(50) NOT NULL DEFAULT 'includes' COMMENT 'includes, faq, highlights, seo',
+    title VARCHAR(255) NULL COMMENT 'Section title',
+    body TEXT NULL COMMENT 'Section body',
+
+    sort_order INT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Display order',
+    status VARCHAR(30) NOT NULL DEFAULT 'active' COMMENT 'active, inactive',
+
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    deleted_at TIMESTAMP NULL,
+
+    CONSTRAINT fk_package_contents_package
+        FOREIGN KEY (package_id)
+        REFERENCES packages(id)
+        ON DELETE CASCADE,
+
+    INDEX idx_package_contents_package_id (package_id),
+    INDEX idx_package_contents_section (section),
+    INDEX idx_package_contents_status (status)
+) ENGINE=InnoDB COMMENT='Stores storefront content sections for packages';
+
+
+-- -----------------------------------------------------
+-- FINANCIAL SUMMARIES
+-- -----------------------------------------------------
+-- Stores daily financial summaries populated by queue job.
+-- -----------------------------------------------------
+
+CREATE TABLE financial_summaries (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    summary_date DATE NOT NULL COMMENT 'Summary date',
+    currency CHAR(3) NOT NULL DEFAULT 'BDT' COMMENT 'Currency',
+
+    orders_count INT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Orders created that day',
+    gross_revenue DECIMAL(14,2) NOT NULL DEFAULT 0.00 COMMENT 'Total payable amount',
+    discounts DECIMAL(14,2) NOT NULL DEFAULT 0.00 COMMENT 'Total discounts (coupon/wallet)',
+    refunds DECIMAL(14,2) NOT NULL DEFAULT 0.00 COMMENT 'Total refunds',
+    wallet_used DECIMAL(14,2) NOT NULL DEFAULT 0.00 COMMENT 'Amount paid via wallet',
+    net_revenue DECIMAL(14,2) NOT NULL DEFAULT 0.00 COMMENT 'Net recognized revenue',
+
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+
+    UNIQUE KEY uq_financial_summary (summary_date, currency),
+    INDEX idx_financial_summaries_date (summary_date),
+    INDEX idx_financial_summaries_currency (currency)
+) ENGINE=InnoDB COMMENT='Stores daily financial summaries populated by queue job';
+
+
+-- -----------------------------------------------------
+-- QUEUE TABLES (Laravel native)
+-- -----------------------------------------------------
+
+CREATE TABLE jobs (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    queue VARCHAR(255) NOT NULL,
+    payload LONGTEXT NOT NULL,
+    attempts TINYINT UNSIGNED NOT NULL,
+    reserved_at INT UNSIGNED NULL,
+    available_at INT UNSIGNED NOT NULL,
+    created_at INT UNSIGNED NOT NULL,
+    INDEX idx_jobs_queue (queue)
+) ENGINE=InnoDB COMMENT='Laravel queue jobs';
+
+CREATE TABLE failed_jobs (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    uuid VARCHAR(255) NULL,
+    connection TEXT NOT NULL,
+    queue TEXT NOT NULL,
+    payload LONGTEXT NOT NULL,
+    exception LONGTEXT NOT NULL,
+    failed_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_failed_jobs_uuid (uuid)
+) ENGINE=InnoDB COMMENT='Laravel failed jobs';
+
+CREATE TABLE job_batches (
+    id VARCHAR(255) PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    total_jobs INT UNSIGNED NOT NULL,
+    pending_jobs INT UNSIGNED NOT NULL,
+    failed_jobs INT UNSIGNED NOT NULL,
+    failed_job_ids LONGTEXT NOT NULL,
+    options MEDIUMTEXT NULL,
+    created_at INT UNSIGNED NOT NULL,
+    finished_at INT UNSIGNED NULL
+) ENGINE=InnoDB COMMENT='Laravel job batches';
+
+
+-- =====================================================================
+-- ADDITIVE COLUMNS (ALTER only; safe, no destructive change)
+-- New tables above are created before these FKs are added.
+-- =====================================================================
+
+-- Packages: currency, trial, SEO
+ALTER TABLE packages
+    ADD COLUMN currency CHAR(3) NOT NULL DEFAULT 'BDT' COMMENT 'ISO currency code, for example BDT, USD',
+    ADD COLUMN is_trial TINYINT(1) NOT NULL DEFAULT 0 COMMENT '1 means this package can be bought as a trial',
+    ADD COLUMN trial_days INT UNSIGNED NULL COMMENT 'Trial length in days when is_trial = 1',
+    ADD COLUMN meta_title VARCHAR(255) NULL COMMENT 'SEO meta title',
+    ADD COLUMN meta_description VARCHAR(512) NULL COMMENT 'SEO meta description';
+
+-- Payments: currency
+ALTER TABLE payments
+    ADD COLUMN currency CHAR(3) NOT NULL DEFAULT 'BDT' COMMENT 'ISO currency code';
+
+ALTER TABLE payments
+    ADD INDEX idx_payments_currency (currency);
+
+-- Orders: currency, wallet, trial, coupon
+ALTER TABLE orders
+    ADD COLUMN currency CHAR(3) NOT NULL DEFAULT 'BDT' COMMENT 'ISO currency code',
+    ADD COLUMN wallet_amount DECIMAL(12,2) NOT NULL DEFAULT 0.00 COMMENT 'Amount paid from customer wallet',
+    ADD COLUMN paid_via_wallet TINYINT(1) NOT NULL DEFAULT 0 COMMENT '1 means wallet was used for part/full payment',
+    ADD COLUMN is_trial TINYINT(1) NOT NULL DEFAULT 0 COMMENT '1 means this order is a trial',
+    ADD COLUMN converted_from_trial_order_id BIGINT UNSIGNED NULL COMMENT 'Previous trial order if this is a trial conversion',
+    ADD COLUMN coupon_id BIGINT UNSIGNED NULL COMMENT 'Applied coupon',
+    ADD COLUMN coupon_code VARCHAR(50) NULL COMMENT 'Applied coupon code for history';
+
+ALTER TABLE orders
+    ADD CONSTRAINT fk_orders_converted_from
+        FOREIGN KEY (converted_from_trial_order_id)
+        REFERENCES orders(id)
+        ON DELETE SET NULL,
+    ADD CONSTRAINT fk_orders_coupon
+        FOREIGN KEY (coupon_id)
+        REFERENCES coupons(id)
+        ON DELETE SET NULL,
+    ADD INDEX idx_orders_currency (currency),
+    ADD INDEX idx_orders_is_trial (is_trial),
+    ADD INDEX idx_orders_coupon_id (coupon_id);

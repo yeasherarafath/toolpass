@@ -1,0 +1,169 @@
+# Future Feature Plan
+
+This document records planned features for the digital tool subscription
+access management platform, plus the agreed application architecture.
+
+Items are split into:
+- ADD NOW  : will be implemented in this build phase (schema already appended to db.txt)
+- FUTURE   : documented for later phases, no schema yet
+
+================================================================================
+ARCHITECTURE DECISIONS
+================================================================================
+
+Command side      : ACTION PATTERN (one class per operation) under app/Actions
+Automatic logic   : LARAVEL MODEL OBSERVERS (side-effects triggered by model changes)
+Cross-cutting      : OBSERVERS dispatch DOMAIN EVENTS -> LISTENERS
+                     (notifications, activity logs, financial summaries, slot sync)
+Shared logic       : TRAITS inside app/Actions/Concerns (used by many actions)
+
+Why this design
+- Many small, repeatable operations (verify payment, create access, assign
+  account, invite, provide OTP, approve device, expire access, decrement slot).
+- Actions keep each operation single-responsibility and testable.
+- Observers remove duplicated "when X happens, also do Y" logic from controllers.
+- Events/Listeners keep notifications, logs, and financial tallies decoupled.
+- Traits hold logic reused by multiple actions (no god-services).
+
+--------------------------------------------------------------------------------
+Action classes (app/Actions)
+--------------------------------------------------------------------------------
+Payments/   VerifyPaymentAction, RejectPaymentAction
+Orders/     CreateOrderAction, ReviewRequiredInfoAction, MarkOrderReadyAction
+Access/     CreateOrderAccessesAction, AssignToolAccountAction,
+            DeliverAccessAction, RevokeAccessAction, ExpireAccessAction
+Invite/     InviteUserAction
+Otp/        RequestOtpAction, ProvideOtpAction
+Device/     ApproveDeviceAction, ResetDeviceAction
+Renewal/    CreateRenewalAction
+Wallet/     CreditWalletAction, DebitWalletAction
+Coupon/     ValidateCouponAction, ApplyCouponAction
+
+--------------------------------------------------------------------------------
+Observers (app/Observers) -> automatic side-effects
+--------------------------------------------------------------------------------
+PaymentObserver           : on verified  -> MarkOrderReadyAction -> dispatch OrderReady
+OrderObserver             : on ready     -> CreateOrderAccessesAction (one per tool)
+                                        + spawn invite_user / manual_delivery tasks
+UserToolAccessObserver    : on created   -> increment tool_accounts.used_slots
+                                        + dispatch AccessDelivered
+                          : on expired/revoked -> decrement used_slots
+                                        + dispatch AccessExpired
+OtpRequestObserver        : on created   -> create provide_otp admin task
+DeviceResetRequestObserver: on created   -> create device_reset admin task
+ToolAccountObserver       : on slot change -> if used_slots >= max_users -> status full
+
+--------------------------------------------------------------------------------
+Events -> Listeners (decoupled cross-cutting side-effects)
+--------------------------------------------------------------------------------
+OrderReady, AccessDelivered, AccessExpired, OtpProvided, WalletChanged
+  -> SendNotification        (email/SMS via notifications table)
+  -> WriteActivityLog        (append activity_logs)
+  -> UpdateFinancialSummary  (increment financial_summaries)
+  -> SyncAccountSlots        (recompute used_slots from child rows; fixes drift)
+
+--------------------------------------------------------------------------------
+Concerns / traits (app/Actions/Concerns) -- shared logic across actions
+--------------------------------------------------------------------------------
+LogsActivity.php        writes activity_logs
+SyncsAccountSlots.php   safe increment/decrement used_slots + full-status
+NotifiesUser.php        dispatch notification event -> notifications table
+GeneratesReference.php  order_no ORD-*, ticket_no TKT-*, etc.
+ResolvesOrderReadiness.php  paid AND info approved?
+HandlesOtpRateLimit.php throttles RequestOtpAction
+AppliesCoupon.php       shared coupon validation / discount math
+
+Usage:
+    class VerifyPaymentAction {
+        use LogsActivity, ResolvesOrderReadiness, SyncsAccountSlots;
+        public function handle(Payment $payment) { /* ... */ }
+    }
+
+================================================================================
+ADD NOW
+================================================================================
+
+1. Multi-currency support
+   - Add currency CHAR(3) DEFAULT 'BDT' to packages, orders, payments.
+   - New table currencies(code, name, symbol, rate, is_default, status).
+   - Reporting and gateway reconciliation become currency-aware.
+
+2. Internationalization / multi-language
+   - New table translations(subject_type, subject_id, locale, field, value).
+   - Covers package name/description, announcements, UI strings (en / bn).
+   - System is internationalization-ready; locale layer added.
+
+3. Wallet / credit system
+   - New table wallets(user_id, currency, balance, locked_balance).
+   - New table wallet_transactions(type, amount, balance_after, ref_type, ref_id, note).
+   - orders add wallet_amount, paid_via_wallet.
+   - Customers pre-fund and buy instantly without per-order payment proof.
+
+4. Trial-to-paid funnel
+   - packages add is_trial, trial_days.
+   - orders add is_trial, converted_from_trial_order_id.
+   - Queue job sends trial-ending reminders and converts to paid.
+
+5. Coupons / promotions
+   - New table coupons(code, type, value, min_amount, max_discount, currency,
+     starts_at, ends_at, usage_limit, used_count, status).
+   - New table coupon_usages(coupon_id, order_id, user_id, discount_amount).
+   - orders add coupon_id, coupon_code.
+   - First-order discounts, referral rewards, promo codes supported.
+
+6. Notifications (email / SMS)
+   - New table notifications(user_id, channel, type, subject, body, status, sent_at, error).
+   - New table notification_templates(slug, channel, subject, body, variables, status).
+   - Drives OTP links, expiry warnings, announcements; reduces missed-expiry churn.
+
+7. Ratings / reviews / testimonials
+   - New table reviews(user_id, package_id, rating, title, body, status).
+   - Social proof for digital-goods sales.
+
+8. Product page content model
+   - New table package_contents(package_id, section, title, body, sort_order, status).
+     sections: includes, faq, highlights, seo
+   - packages add meta_title, meta_description for storefront SEO.
+
+9. Financial summaries
+   - New table financial_summaries(summary_date, currency, orders_count,
+     gross_revenue, discounts, refunds, wallet_used, net_revenue).
+   - Populated nightly by queue job; removes manual accounting.
+
+10. Queue / jobs system
+   - Append Laravel native jobs, failed_jobs, job_batches tables.
+   - Drives OTP expiry, access expiry, renewal reminders, trial conversion,
+     notification dispatch, financial summary.
+
+================================================================================
+FUTURE (documented, no schema yet)
+================================================================================
+
+11. Reseller / affiliate tier
+   - affiliates, affiliate_links, commissions.
+   - Sub-resellers sell bundles; commission tracked.
+
+12. Recurring auto-billing
+   - payment_methods, subscriptions, invoices.
+   - Saved gateway mandates create predictable MRR.
+
+13. Tiered plans & upsell
+   - plan_tiers, order_addons.
+   - Lite/Pro/Enterprise variants and mid-cycle add-ons.
+
+14. B2B / team seats
+   - orders.quantity, team_members.
+   - Sell multi-seat team access to agencies (fits existing slot system).
+
+15. Marketplace for staff
+   - staff_payouts, staff_slas.
+   - Vetted staff operate as delivery partners per tool.
+
+16. API / integrations
+   - api_tokens, webhooks, integrations.
+   - Resell via Telegram bot / external store.
+
+17. Supplier / vendor model
+   - vendors, vendor_accounts.
+   - Flip from shared-account reseller (ToS risk) to licensed-seat broker;
+     keeps same platform, removes ban risk.
