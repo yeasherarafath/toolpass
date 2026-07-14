@@ -21,7 +21,7 @@ class ToolFactory extends Factory
         return [
             'category_id' => ToolCategory::factory(),
             'name' => $name,
-            'slug' => Str::slug($name),
+            'slug' => Str::slug($name) . '-' . Str::random(6),
             'website_url' => fake()->url(),
             'logo' => null,
             'description' => fake()->sentence(),

@@ -19,7 +19,7 @@ class ToolCategoryFactory extends Factory
 
         return [
             'name' => $name,
-            'slug' => Str::slug($name),
+            'slug' => Str::slug($name) . '-' . Str::random(6),
             'description' => fake()->sentence(),
             'status' => 'active',
             'sort_order' => fake()->numberBetween(1, 10),

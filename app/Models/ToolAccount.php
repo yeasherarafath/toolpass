@@ -102,4 +102,23 @@ class ToolAccount extends Model
     {
         return $this->hasMany(UserToolDevice::class, 'tool_account_id');
     }
+
+    public function maskedLoginPassword(): string
+    {
+        $value = $this->login_password_encrypted
+            ? decrypt($this->login_password_encrypted)
+            : '';
+
+        if ($value === '') {
+            return '';
+        }
+
+        $length = strlen($value);
+
+        if ($length <= 2) {
+            return str_repeat('*', $length);
+        }
+
+        return substr($value, 0, 1) . str_repeat('*', $length - 2) . substr($value, -1);
+    }
 }
