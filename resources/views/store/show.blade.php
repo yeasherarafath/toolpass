@@ -49,4 +49,43 @@
             @endauth
         </div>
     </div>
+
+    <div class="card mt-3">
+        <div class="card-header"><h3 class="card-title">Reviews</h3></div>
+        <div class="card-body">
+            @forelse ($package->reviews()->where('status', 'approved')->get() as $review)
+                <div class="mb-2 border p-2 rounded">
+                    <div><strong>{{ $review->user?->name }}</strong> &middot; {{ $review->rating }}/5</div>
+                    <div>{{ $review->title }}</div>
+                    <div class="text-secondary">{{ $review->body }}</div>
+                </div>
+            @empty
+                <p class="text-secondary">No reviews yet.</p>
+            @endforelse
+
+            @auth
+                @if (Auth::user()->role === 'customer')
+                    <form method="POST" action="{{ route('reviews.store') }}">
+                        @csrf
+                        <input type="hidden" name="package_id" value="{{ $package->id }}">
+                        <div class="mb-2">
+                            <label class="form-label">Rating</label>
+                            <select name="rating" class="form-select">
+                                @for ($i = 5; $i >= 1; $i--)
+                                    <option value="{{ $i }}">{{ $i }}</option>
+                                @endfor
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <input type="text" name="title" class="form-control" placeholder="Title">
+                        </div>
+                        <div class="mb-2">
+                            <textarea name="body" class="form-control" placeholder="Your review"></textarea>
+                        </div>
+                        <button class="btn btn-primary">Submit review</button>
+                    </form>
+                @endif
+            @endauth
+        </div>
+    </div>
 @endsection

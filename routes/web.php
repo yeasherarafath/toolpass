@@ -12,6 +12,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\StorefrontController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Customer\OrderController as CustomerOrderController;
+use App\Http\Controllers\Customer\ReviewController as CustomerReviewController;
 use App\Http\Controllers\Customer\OtpController as CustomerOtpController;
 use App\Http\Controllers\Customer\DeviceController as CustomerDeviceController;
 use App\Http\Controllers\Customer\SupportController as CustomerSupportController;
@@ -75,6 +76,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/tasks/{task}/complete', [AdminTaskController::class, 'complete'])->name('tasks.complete');
 
         Route::post('/announcements', [AnnouncementController::class, 'store'])->name('announcements.store');
+
+        Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
+        Route::post('/reviews/{review}/moderate', [ReviewController::class, 'moderate'])->name('reviews.moderate');
     });
 
     Route::middleware('role:staff')->prefix('staff')->name('staff.')->group(function () {
@@ -89,6 +93,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/orders', [CustomerOrderController::class, 'store'])->name('orders.store');
         Route::post('/orders/{order}/info', [CustomerOrderController::class, 'submitInfo'])->name('orders.info');
         Route::post('/orders/{order}/payments', [CustomerOrderController::class, 'storePayment'])->name('orders.payments');
+        Route::post('/orders/{order}/coupon', [CustomerOrderController::class, 'applyCoupon'])->name('orders.coupon');
+        Route::post('/orders/{order}/renew', [CustomerOrderController::class, 'renew'])->name('orders.renew');
+        Route::post('/reviews', [CustomerReviewController::class, 'store'])->name('reviews.store');
 
         Route::post('/otp/request', [CustomerOtpController::class, 'request'])->name('otp.request');
         Route::get('/otp/{otpRequest}', [CustomerOtpController::class, 'show'])->name('otp.show');

@@ -32,7 +32,11 @@ class Coupon extends Model
     ];
 
     protected $casts = [
-
+        'starts_at' => 'datetime',
+        'ends_at' => 'datetime',
+        'min_amount' => 'decimal:2',
+        'max_discount' => 'decimal:2',
+        'value' => 'decimal:2',
     ];
 
     public function couponUsages(): HasMany

@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
 use App\Actions\Orders\CreateOrderAction;
+use App\Actions\Orders\CreateRenewalAction;
 use App\Actions\Payments\CreatePaymentAction;
+use App\Actions\Coupon\ApplyCouponAction;
 use App\Models\Order;
 use App\Models\OrderCustomFieldValue;
 use App\Models\Package;
@@ -102,6 +104,41 @@ class OrderController extends Controller
 
         return redirect()->route('customer.orders.show', $order)
             ->with('success', 'Payment submitted. Awaiting verification.');
+    }
+
+    public function applyCoupon(Request $request, Order $order)
+    {
+        $this->ensureOwned($order);
+
+        if ($order->payment_status === 'paid') {
+            return back()->withErrors(['coupon' => 'Cannot apply coupon to a paid order.']);
+        }
+
+        $validated = $request->validate([
+            'code' => ['required', 'string', 'max:50'],
+        ]);
+
+        try {
+            app(ApplyCouponAction::class)->handle($order, $validated['code'], Auth::user());
+        } catch (\Throwable $e) {
+            return back()->withErrors(['coupon' => $e->getMessage()]);
+        }
+
+        return back()->with('success', 'Coupon applied.');
+    }
+
+    public function renew(Request $request, Order $order)
+    {
+        $this->ensureOwned($order);
+
+        if (! $order->is_trial) {
+            return back()->withErrors(['renew' => 'Only trial orders can be renewed.']);
+        }
+
+        $renewal = app(CreateRenewalAction::class)->handle($order, Auth::user());
+
+        return redirect()->route('customer.orders.show', $renewal)
+            ->with('success', 'Renewal order created.');
     }
 
     protected function ensureOwned(Order $order): void
