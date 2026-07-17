@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Platform\AuthController as PlatformAuthController;
 use App\Http\Controllers\Platform\DashboardController as PlatformDashboardController;
+use App\Http\Controllers\Platform\SettingsController as PlatformSettingsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,11 +23,19 @@ foreach (config('tenancy.central_domains') as $domain) {
         Route::middleware('guest:owner')->group(function () {
             Route::get('/login', [PlatformAuthController::class, 'showLogin'])->name('platform.login');
             Route::post('/login', [PlatformAuthController::class, 'login'])->middleware('throttle:5,1')->name('platform.login.attempt');
+
+            Route::get('/register', [PlatformAuthController::class, 'showRegister'])->name('platform.register');
+            Route::post('/register', [PlatformAuthController::class, 'register'])->middleware('throttle:5,1')->name('platform.register.attempt');
         });
 
         Route::middleware('auth:owner')->group(function () {
             Route::post('/logout', [PlatformAuthController::class, 'logout'])->name('platform.logout');
             Route::get('/dashboard', [PlatformDashboardController::class, 'index'])->name('platform.dashboard');
+
+            Route::middleware('can:manage-settings')->group(function () {
+                Route::get('/settings', [PlatformSettingsController::class, 'edit'])->name('platform.settings.edit');
+                Route::put('/settings', [PlatformSettingsController::class, 'update'])->name('platform.settings.update');
+            });
         });
     });
 }

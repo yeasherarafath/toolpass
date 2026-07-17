@@ -19,6 +19,8 @@ use App\Http\Controllers\Admin\SupportController as AdminSupportController;
 use App\Http\Controllers\Admin\AdminTaskController;
 use App\Http\Controllers\Admin\AnnouncementController;
 use App\Http\Controllers\Admin\ReviewController;
+use App\Http\Controllers\Admin\SettingsController as AdminSettingsController;
+use App\Http\Controllers\Admin\OfferBannerController;
 use App\Http\Controllers\Customer\OrderController as CustomerOrderController;
 use App\Http\Controllers\Customer\ReviewController as CustomerReviewController;
 use App\Http\Controllers\Customer\OtpController as CustomerOtpController;
@@ -96,6 +98,11 @@ Route::middleware([
 
             Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
             Route::post('/reviews/{review}/moderate', [ReviewController::class, 'moderate'])->name('reviews.moderate');
+
+            Route::get('/settings', [AdminSettingsController::class, 'edit'])->name('settings.edit');
+            Route::put('/settings', [AdminSettingsController::class, 'update'])->name('settings.update');
+
+            Route::resource('offer-banners', OfferBannerController::class)->except(['show']);
         });
 
         Route::middleware('role:staff')->prefix('staff')->name('staff.')->group(function () {

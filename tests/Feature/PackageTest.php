@@ -7,9 +7,9 @@ use App\Models\Tool;
 use App\Models\ToolCategory;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Tests\TenantTestCase;
 
-class PackageTest extends TestCase
+class PackageTest extends TenantTestCase
 {
     use RefreshDatabase;
 

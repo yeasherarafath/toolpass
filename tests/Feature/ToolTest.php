@@ -5,9 +5,9 @@ namespace Tests\Feature;
 use App\Models\Tool;
 use App\Models\ToolCategory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Tests\TenantTestCase;
 
-class ToolTest extends TestCase
+class ToolTest extends TenantTestCase
 {
     use RefreshDatabase;
 

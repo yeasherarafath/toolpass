@@ -6,9 +6,9 @@ use App\Models\Package;
 use App\Models\Tool;
 use App\Models\PackageTool;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Tests\TenantTestCase;
 
-class StorefrontTest extends TestCase
+class StorefrontTest extends TenantTestCase
 {
     use RefreshDatabase;
 

@@ -26,6 +26,21 @@ class Tenant extends BaseTenant implements TenantWithDatabase
         ];
     }
 
+    public function getIncrementing()
+    {
+        return false;
+    }
+
+    public function getKeyType()
+    {
+        return 'string';
+    }
+
+    public function shouldGenerateId(): bool
+    {
+        return false;
+    }
+
     public function owner(): HasMany
     {
         return $this->hasMany(Owner::class, 'tenant_id', 'id');

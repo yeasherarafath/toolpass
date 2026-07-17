@@ -10,9 +10,9 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Event;
-use Tests\TestCase;
+use Tests\TenantTestCase;
 
-class ToolAccountTest extends TestCase
+class ToolAccountTest extends TenantTestCase
 {
     use RefreshDatabase;
 

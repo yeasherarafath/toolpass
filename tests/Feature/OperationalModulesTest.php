@@ -17,9 +17,9 @@ use App\Models\User;
 use App\Actions\Otp\ProvideOtpAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Queue;
-use Tests\TestCase;
+use Tests\TenantTestCase;
 
-class OperationalModulesTest extends TestCase
+class OperationalModulesTest extends TenantTestCase
 {
     use RefreshDatabase;
 

@@ -13,9 +13,9 @@ use App\Models\User;
 use App\Models\UserToolAccess;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Queue;
-use Tests\TestCase;
+use Tests\TenantTestCase;
 
-class OrderPipelineTest extends TestCase
+class OrderPipelineTest extends TenantTestCase
 {
     use RefreshDatabase;
 

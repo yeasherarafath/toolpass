@@ -10,9 +10,9 @@ use App\Models\Tool;
 use App\Models\UserToolAccess;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Tests\TenantTestCase;
 
-class DashboardTest extends TestCase
+class DashboardTest extends TenantTestCase
 {
     use RefreshDatabase;
 

@@ -3,7 +3,10 @@
 namespace App\Providers;
 
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use App\Services\Settings;
+use App\Services\TenantSettings;
 use App\Models\User;
 use App\Models\ToolAccount;
 use App\Models\Order;
@@ -42,6 +45,10 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        if ($this->app->environment('testing')) {
+            $this->loadMigrationsFrom(database_path('migrations/tenant'));
+        }
+
         User::observe(UserObserver::class);
         ToolAccount::observe(ToolAccountObserver::class);
         Order::observe(OrderObserver::class);
@@ -58,5 +65,50 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(AccessExpired::class, NotifyAccessExpired::class);
         Event::listen(OtpProvided::class, NotifyOtpProvided::class);
         Event::listen(OtpProvided::class, WriteActivityLog::class);
+
+        $this->shareBranding();
+    }
+
+    /**
+     * Share branding to all views. Precedence: tenant business settings ->
+     * central platform settings -> config('app.name'). Wrapped defensively so
+     * it is a no-op during migrations / before tables exist.
+     */
+    protected function shareBranding(): void
+    {
+        View::composer('*', function ($view) {
+            $branding = [
+                'site_name' => config('app.name', 'ToolPass'),
+                'site_description' => null,
+                'site_keywords' => null,
+                'logo_path' => null,
+                'favicon_path' => null,
+                'footer_text' => config('app.name', 'ToolPass'),
+                'logo_disk' => 'public',
+            ];
+
+            try {
+                $central = app(Settings::class);
+                $branding['site_name'] = $central->get('site_name') ?: $branding['site_name'];
+                $branding['site_description'] = $central->get('site_description');
+                $branding['site_keywords'] = $central->get('site_keywords');
+                $branding['logo_path'] = $central->get('logo_path');
+                $branding['favicon_path'] = $central->get('favicon_path');
+                $branding['footer_text'] = $central->get('footer_text') ?: $branding['footer_text'];
+
+                if (function_exists('tenant') && tenant()) {
+                    $tenantSettings = app(TenantSettings::class);
+                    $branding['site_name'] = $tenantSettings->get('business_name') ?: $branding['site_name'];
+                    $branding['site_description'] = $tenantSettings->get('business_description') ?: $branding['site_description'];
+                    $branding['logo_path'] = $tenantSettings->get('logo_path') ?: $branding['logo_path'];
+                    $branding['favicon_path'] = $tenantSettings->get('favicon_path') ?: $branding['favicon_path'];
+                    $branding['footer_text'] = $tenantSettings->get('business_name') ?: $branding['footer_text'];
+                }
+            } catch (\Throwable $e) {
+                // tables not migrated yet (e.g. during install) - use fallbacks
+            }
+
+            $view->with('branding', $branding);
+        });
     }
 }

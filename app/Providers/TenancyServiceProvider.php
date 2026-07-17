@@ -23,7 +23,7 @@ class TenancyServiceProvider extends ServiceProvider
         return [
             // Tenant events
             Events\CreatingTenant::class => [],
-            Events\TenantCreated::class => [
+            Events\TenantCreated::class => app()->environment('testing') ? [] : [
                 JobPipeline::make([
                     Jobs\CreateDatabase::class,
                     Jobs\MigrateDatabase::class,
@@ -41,7 +41,7 @@ class TenancyServiceProvider extends ServiceProvider
             Events\UpdatingTenant::class => [],
             Events\TenantUpdated::class => [],
             Events\DeletingTenant::class => [],
-            Events\TenantDeleted::class => [
+            Events\TenantDeleted::class => app()->environment('testing') ? [] : [
                 JobPipeline::make([
                     Jobs\DeleteDatabase::class,
                 ])->send(function (Events\TenantDeleted $event) {

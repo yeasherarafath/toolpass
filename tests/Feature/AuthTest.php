@@ -6,9 +6,9 @@ use App\Events\User\UserCreated;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
-use Tests\TestCase;
+use Tests\TenantTestCase;
 
-class AuthTest extends TestCase
+class AuthTest extends TenantTestCase
 {
     use RefreshDatabase;
 

@@ -5,9 +5,9 @@ namespace Tests\Feature;
 use App\Models\ToolCategory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Str;
-use Tests\TestCase;
+use Tests\TenantTestCase;
 
-class ToolCategoryTest extends TestCase
+class ToolCategoryTest extends TenantTestCase
 {
     use RefreshDatabase;
 

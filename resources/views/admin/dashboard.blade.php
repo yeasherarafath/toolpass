@@ -76,5 +76,7 @@
         <a href="{{ route('admin.orders.index') }}" class="btn btn-primary">Manage orders</a>
         <a href="{{ route('admin.tasks.index') }}" class="btn btn-secondary">Admin tasks</a>
         <a href="{{ route('admin.support.index') }}" class="btn btn-secondary">Support</a>
+        <a href="{{ route('admin.offer-banners.index') }}" class="btn btn-secondary">Offer banners</a>
+        <a href="{{ route('admin.settings.edit') }}" class="btn btn-secondary">Business settings</a>
     </div>
 @endsection

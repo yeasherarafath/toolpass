@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Package;
+use App\Models\OfferBanner;
 use Illuminate\Http\Request;
 
 class StorefrontController extends Controller
@@ -14,7 +15,9 @@ class StorefrontController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('store.index', compact('packages'));
+        $banners = OfferBanner::active()->ordered()->get();
+
+        return view('store.index', compact('packages', 'banners'));
     }
 
     public function show(Package $package)

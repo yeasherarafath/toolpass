@@ -18,9 +18,9 @@ use App\Actions\Review\CreateReviewAction;
 use App\Actions\Review\ModerateReviewAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Queue;
-use Tests\TestCase;
+use Tests\TenantTestCase;
 
-class AddNowFeaturesTest extends TestCase
+class AddNowFeaturesTest extends TenantTestCase
 {
     use RefreshDatabase;
 

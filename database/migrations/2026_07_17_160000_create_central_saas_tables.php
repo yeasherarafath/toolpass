@@ -78,6 +78,21 @@ return new class extends Migration
             $table->decimal('amount', 12, 2)->default(0.00)->comment('Charged amount');
             $table->char('currency', 3)->default('BDT')->comment('Currency');
 
+            $table->unsignedInteger('max_staff_override')->nullable()->comment('Admin override for max staff; null = inherit from plan');
+            $table->unsignedInteger('max_customers_override')->nullable()->comment('Admin override for max customers; null = inherit from plan');
+            $table->unsignedInteger('max_packages_override')->nullable()->comment('Admin override for max packages; null = inherit from plan');
+            $table->unsignedInteger('email_quota_override')->nullable()->comment('Admin override for email quota; null = inherit from plan');
+            $table->unsignedInteger('sms_quota_override')->nullable()->comment('Admin override for SMS quota; null = inherit from plan');
+            $table->json('feature_overrides')->nullable()->comment('Admin override for feature flags; null = inherit from plan');
+
+            $table->unsignedInteger('emails_used')->default(0)->comment('Emails manually recorded/enforced for current cycle');
+            $table->unsignedInteger('sms_used')->default(0)->comment('SMS manually recorded/enforced for current cycle');
+            $table->timestamp('usage_reset_at')->nullable()->comment('When usage counters were last reset by admin');
+
+            $table->boolean('quota_enforced')->default(true)->comment('1 = enforce quotas/limits, 0 = admin disabled enforcement');
+            $table->boolean('is_suspended')->default(false)->comment('1 = admin manually suspended (blocks access regardless of dates)');
+            $table->string('suspend_reason', 255)->nullable()->comment('Reason for manual suspension');
+
             $table->text('note')->nullable()->comment('Admin note');
 
             $table->timestamps();

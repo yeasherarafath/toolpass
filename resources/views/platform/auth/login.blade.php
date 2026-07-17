@@ -31,4 +31,14 @@
             <button type="submit" class="btn btn-primary w-100">Sign in</button>
         </div>
     </form>
+
+    @if (session('status'))
+        <div class="alert alert-success mt-3">{{ session('status') }}</div>
+    @endif
+
+    @if (app(\App\Services\Settings::class)->bool('allow_owner_registration'))
+        <div class="text-center text-secondary mt-3">
+            New here? <a href="{{ route('platform.register') }}">Create a business account</a>
+        </div>
+    @endif
 @endsection
