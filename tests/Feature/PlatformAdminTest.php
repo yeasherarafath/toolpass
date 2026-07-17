@@ -156,6 +156,6 @@ class PlatformAdminTest extends TenantTestCase
             ->post(route('admin.tenants.impersonate', $tenant), ['user_id' => $user->id])
             ->assertRedirect();
 
-        $this->assertDatabaseHas('impersonation_tokens', ['user_id' => (string) $user->id]);
+        $this->assertDatabaseHas('tenant_user_impersonation_tokens', ['user_id' => (string) $user->id]);
     }
 }
