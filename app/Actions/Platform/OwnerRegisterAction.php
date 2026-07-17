@@ -14,10 +14,29 @@ use Illuminate\Validation\ValidationException;
 
 class OwnerRegisterAction
 {
-    protected array $reserved = ['www', 'app', 'admin', 'api', 'mail', 'ftp', 'central', 'platform', 'dashboard'];
+    protected const DEFAULT_RESERVED = 'www,app,admin,api,mail,ftp,central,platform,dashboard,staff,superadmin,yatpmin,business';
 
     public function __construct(protected Settings $settings)
     {
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    protected function reservedSlugs(): array
+    {
+        $raw = (string) $this->settings->get('reserved_slugs', self::DEFAULT_RESERVED);
+
+        if (trim($raw) === '') {
+            $raw = self::DEFAULT_RESERVED;
+        }
+
+        return collect(preg_split('/[\s,]+/', $raw))
+            ->map(fn ($s) => Str::lower(trim($s)))
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
     }
 
     /**
@@ -80,7 +99,7 @@ class OwnerRegisterAction
 
     protected function guardSlug(string $slug): void
     {
-        if (strlen($slug) < 3 || in_array($slug, $this->reserved, true)) {
+        if (strlen($slug) < 3 || in_array($slug, $this->reservedSlugs(), true)) {
             throw ValidationException::withMessages([
                 'slug' => 'This subdomain is not available.',
             ]);

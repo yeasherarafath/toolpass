@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Owner;
+use App\Models\Admin;
 use App\Models\Plan;
 use App\Models\PlatformSetting;
 use Illuminate\Database\Seeder;
@@ -17,39 +17,40 @@ class PlatformSeeder extends Seeder
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
         $permissions = [
+            'manage-admins',
             'manage-owners',
             'manage-plans',
             'manage-subscriptions',
+            'manage-tenants',
             'manage-gateway',
             'manage-settings',
+            'manage-reserved-slugs',
             'impersonate-tenant',
             'send-mail',
             'view-platform',
         ];
 
         foreach ($permissions as $name) {
-            Permission::findOrCreate($name, 'owner');
+            Permission::findOrCreate($name, 'admin');
         }
 
-        $superAdmin = Role::findOrCreate('super_admin', 'owner');
-        $platformStaff = Role::findOrCreate('platform_staff', 'owner');
+        $superAdmin = Role::findOrCreate('super_admin', 'admin');
+        $platformStaff = Role::findOrCreate('platform_staff', 'admin');
 
         $superAdmin->syncPermissions($permissions);
         $platformStaff->syncPermissions(['view-platform', 'send-mail', 'manage-settings']);
 
-        $owner = Owner::updateOrCreate(
+        $admin = Admin::updateOrCreate(
             ['email' => 'superadmin@toolpass.test'],
             [
                 'name' => 'Super Admin',
                 'password' => Hash::make('password'),
-                'business_name' => 'ToolPass Platform',
                 'status' => 'active',
-                'tenant_id' => null,
                 'email_verified_at' => now(),
             ]
         );
 
-        $owner->syncRoles(['super_admin']);
+        $admin->syncRoles(['super_admin']);
 
         Plan::updateOrCreate(
             ['slug' => 'starter'],
@@ -84,12 +85,17 @@ class PlatformSeeder extends Seeder
             ['key' => 'support_email', 'group' => 'branding', 'value' => 'support@toolpass.test'],
             ['key' => 'support_phone', 'group' => 'branding', 'value' => null],
 
+            // Access (login URL prefixes)
+            ['key' => 'admin_path', 'group' => 'access', 'value' => 'yatpmin'],
+            ['key' => 'owner_path', 'group' => 'access', 'value' => 'business'],
+
             // Registration & access
             ['key' => 'allow_owner_registration', 'group' => 'registration', 'value' => '1'],
             ['key' => 'require_email_verification', 'group' => 'registration', 'value' => '0'],
             ['key' => 'require_admin_approval', 'group' => 'registration', 'value' => '0'],
             ['key' => 'default_plan_slug', 'group' => 'registration', 'value' => 'starter'],
             ['key' => 'tenant_domain_suffix', 'group' => 'registration', 'value' => env('CENTRAL_DOMAIN', 'toolpass.test')],
+            ['key' => 'reserved_slugs', 'group' => 'registration', 'value' => 'www,app,admin,api,mail,ftp,central,platform,dashboard,staff,superadmin,yatpmin,business'],
 
             // General
             ['key' => 'default_currency', 'group' => 'general', 'value' => 'BDT'],
@@ -124,5 +130,7 @@ class PlatformSeeder extends Seeder
                 ]
             );
         }
+
+        app(\App\Services\Settings::class)->flush();
     }
 }

@@ -53,6 +53,24 @@ class Settings
     }
 
     /**
+     * Safely resolve a URL path prefix setting for route registration at boot.
+     * Reads the cached settings map and never throws (falls back to $default
+     * when the table/cache is unavailable, e.g. during install/migrate).
+     */
+    public function path(string $key, string $default): string
+    {
+        try {
+            $value = $this->get($key, $default);
+        } catch (\Throwable $e) {
+            return trim($default, '/');
+        }
+
+        $value = is_string($value) ? trim($value, '/') : '';
+
+        return $value !== '' ? $value : trim($default, '/');
+    }
+
+    /**
      * @return array<string, mixed>
      */
     public function all(?string $group = null): array
