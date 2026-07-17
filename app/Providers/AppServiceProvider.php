@@ -67,6 +67,17 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(OtpProvided::class, WriteActivityLog::class);
 
         $this->shareBranding();
+        $this->shareHelper();
+    }
+
+    /**
+     * Make the App\Helper class available in all Blade views as $helper.
+     */
+    protected function shareHelper(): void
+    {
+        View::composer('*', function ($view) {
+            $view->with('helper', \App\Helper::class);
+        });
     }
 
     /**
