@@ -35,7 +35,7 @@ class ToolCategoryController extends Controller
 
         app(CreateToolCategoryAction::class)($data);
 
-        return redirect()->route('admin.categories.index')->with('status', 'Category created.');
+        return redirect()->route('business.categories.index')->with('status', 'Category created.');
     }
 
     public function edit(ToolCategory $category)
@@ -55,13 +55,13 @@ class ToolCategoryController extends Controller
 
         app(UpdateToolCategoryAction::class)($category, $data);
 
-        return redirect()->route('admin.categories.index')->with('status', 'Category updated.');
+        return redirect()->route('business.categories.index')->with('status', 'Category updated.');
     }
 
     public function destroy(ToolCategory $category)
     {
         app(DeleteToolCategoryAction::class)($category);
 
-        return redirect()->route('admin.categories.index')->with('status', 'Category deleted.');
+        return redirect()->route('business.categories.index')->with('status', 'Category deleted.');
     }
 }

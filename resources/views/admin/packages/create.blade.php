@@ -8,7 +8,7 @@
     <div class="col-lg-8">
         <div class="card">
             <div class="card-body">
-                <form method="POST" action="{{ route('admin.packages.store') }}">
+                <form method="POST" action="{{ route('business.packages.store') }}">
                     @csrf
                     <div class="mb-3">
                         <label class="form-label">Name</label>
@@ -100,7 +100,7 @@
                         </select>
                     </div>
                     <button class="btn btn-primary">Save</button>
-                    <a href="{{ route('admin.packages.index') }}" class="btn btn-ghost-secondary">Cancel</a>
+                    <a href="{{ route('business.packages.index') }}" class="btn btn-ghost-secondary">Cancel</a>
                 </form>
             </div>
         </div>

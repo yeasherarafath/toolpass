@@ -48,7 +48,7 @@ class ToolController extends Controller
 
         app(CreateToolAction::class)($data);
 
-        return redirect()->route('admin.tools.index')->with('status', 'Tool created.');
+        return redirect()->route('business.tools.index')->with('status', 'Tool created.');
     }
 
     public function edit(Tool $tool)
@@ -80,13 +80,13 @@ class ToolController extends Controller
 
         app(UpdateToolAction::class)($tool, $data);
 
-        return redirect()->route('admin.tools.index')->with('status', 'Tool updated.');
+        return redirect()->route('business.tools.index')->with('status', 'Tool updated.');
     }
 
     public function destroy(Tool $tool)
     {
         app(DeleteToolAction::class)($tool);
 
-        return redirect()->route('admin.tools.index')->with('status', 'Tool deleted.');
+        return redirect()->route('business.tools.index')->with('status', 'Tool deleted.');
     }
 }

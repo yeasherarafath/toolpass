@@ -12,7 +12,7 @@
                     <h3 class="card-title">New user</h3>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="{{ route('admin.users.store') }}">
+                    <form method="POST" action="{{ route('business.users.store') }}">
                         @csrf
                         <div class="mb-3">
                             <label class="form-label">Full name</label>

@@ -41,8 +41,8 @@
     </div>
 
     <div class="mt-3">
-        <a href="{{ route('admin.orders.index') }}" class="btn btn-primary">Orders</a>
-        <a href="{{ route('admin.tasks.index') }}" class="btn btn-secondary">Tasks</a>
-        <a href="{{ route('admin.support.index') }}" class="btn btn-secondary">Support</a>
+        <a href="{{ route('business.orders.index') }}" class="btn btn-primary">Orders</a>
+        <a href="{{ route('business.tasks.index') }}" class="btn btn-secondary">Tasks</a>
+        <a href="{{ route('business.support.index') }}" class="btn btn-secondary">Support</a>
     </div>
 @endsection

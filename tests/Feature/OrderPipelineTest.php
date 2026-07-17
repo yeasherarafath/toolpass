@@ -75,7 +75,7 @@ class OrderPipelineTest extends TenantTestCase
 
         // 3. Admin approves required information (not ready yet: payment pending)
         $this->actingAs($admin)
-            ->post(route('admin.orders.review-info', $order), ['decision' => 'approve'])
+            ->post(route('business.orders.review-info', $order), ['decision' => 'approve'])
             ->assertRedirect();
 
         $order->refresh();
@@ -96,7 +96,7 @@ class OrderPipelineTest extends TenantTestCase
 
         // 5. Admin verifies payment -> order becomes ready -> accesses created
         $this->actingAs($admin)
-            ->post(route('admin.payments.verify', $payment))
+            ->post(route('business.payments.verify', $payment))
             ->assertRedirect();
 
         $payment->refresh();
@@ -114,7 +114,7 @@ class OrderPipelineTest extends TenantTestCase
 
         // 6. Admin delivers the access
         $this->actingAs($admin)
-            ->post(route('admin.accesses.deliver', $access))
+            ->post(route('business.accesses.deliver', $access))
             ->assertRedirect();
 
         $access->refresh();
@@ -123,7 +123,7 @@ class OrderPipelineTest extends TenantTestCase
 
         // Pages render without errors
         $this->actingAs($customer)->get(route('customer.orders.show', $order))->assertOk();
-        $this->actingAs($admin)->get(route('admin.orders.show', $order))->assertOk();
+        $this->actingAs($admin)->get(route('business.orders.show', $order))->assertOk();
     }
 
     public function test_package_without_custom_fields_skips_info_step(): void
@@ -152,7 +152,7 @@ class OrderPipelineTest extends TenantTestCase
 
         // Verify payment only -> ready
         $payment = Payment::factory()->create(['order_id' => $order->id, 'status' => 'pending']);
-        $this->actingAs($admin)->post(route('admin.payments.verify', $payment))->assertRedirect();
+        $this->actingAs($admin)->post(route('business.payments.verify', $payment))->assertRedirect();
 
         $order->refresh();
         $this->assertEquals('ready', $order->order_status);

@@ -15,7 +15,7 @@
                 <div class="card-header">
                     <h3 class="card-title">Banners</h3>
                     <div class="card-actions">
-                        <a href="{{ route('admin.offer-banners.create') }}" class="btn btn-primary"><i class="ti ti-plus"></i> Add</a>
+                        <a href="{{ route('business.offer-banners.create') }}" class="btn btn-primary"><i class="ti ti-plus"></i> Add</a>
                     </div>
                 </div>
                 <div class="card-body border-0 p-0">
@@ -46,8 +46,8 @@
                                         <td><span class="badge bg-{{ $banner->status === 'active' ? 'green' : 'yellow' }}-lt">{{ $banner->status }}</span></td>
                                         <td>{{ $banner->sort_order }}</td>
                                         <td>
-                                            <a href="{{ route('admin.offer-banners.edit', $banner) }}" class="btn btn-sm btn-ghost-secondary">Edit</a>
-                                            <form method="POST" action="{{ route('admin.offer-banners.destroy', $banner) }}" class="d-inline" onsubmit="return confirm('Delete?');">
+                                            <a href="{{ route('business.offer-banners.edit', $banner) }}" class="btn btn-sm btn-ghost-secondary">Edit</a>
+                                            <form method="POST" action="{{ route('business.offer-banners.destroy', $banner) }}" class="d-inline" onsubmit="return confirm('Delete?');">
                                                 @csrf @method('DELETE')
                                                 <button class="btn btn-sm btn-ghost-danger">Delete</button>
                                             </form>

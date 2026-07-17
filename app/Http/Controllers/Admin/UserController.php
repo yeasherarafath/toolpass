@@ -35,7 +35,7 @@ class UserController extends Controller
 
         app(CreateUserAction::class)($data);
 
-        return redirect()->route('admin.users.index')->with('status', 'User created.');
+        return redirect()->route('business.users.index')->with('status', 'User created.');
     }
 
     public function toggleStatus(Request $request, User $user)

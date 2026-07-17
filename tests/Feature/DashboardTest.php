@@ -21,7 +21,7 @@ class DashboardTest extends TenantTestCase
         $admin = User::factory()->admin()->create();
 
         $this->actingAs($admin)
-            ->get(route('admin.dashboard'))
+            ->get(route('business.dashboard'))
             ->assertOk()
             ->assertSee('Pending payments')
             ->assertSee('Revenue');

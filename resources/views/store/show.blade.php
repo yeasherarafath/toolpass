@@ -42,7 +42,7 @@
                         <button type="submit" class="btn btn-primary">Place order</button>
                     </form>
                 @else
-                    <a href="{{ route('admin.orders.index') }}" class="btn btn-primary">Manage orders</a>
+                    <a href="{{ route('business.orders.index') }}" class="btn btn-primary">Manage orders</a>
                 @endif
             @else
                 <a href="{{ route('login') }}" class="btn btn-primary">Login to order</a>

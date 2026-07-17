@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\PlatformSetting;
 use App\Services\Settings;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 
 class SettingsController extends Controller
@@ -30,6 +31,10 @@ class SettingsController extends Controller
     public function update(Request $request)
     {
         $data = $request->validate([
+            // Access (login URL prefixes + reserved slugs)
+            'admin_path' => ['nullable', 'string', 'max:60', 'alpha_dash'],
+            'owner_path' => ['nullable', 'string', 'max:60', 'alpha_dash'],
+            'reserved_slugs' => ['nullable', 'string', 'max:2000'],
             // Branding
             'site_name' => ['nullable', 'string', 'max:150'],
             'site_description' => ['nullable', 'string', 'max:500'],
@@ -67,6 +72,7 @@ class SettingsController extends Controller
         ]);
 
         $groups = [
+            'access' => ['admin_path', 'owner_path', 'reserved_slugs'],
             'branding' => ['site_name', 'site_description', 'site_keywords', 'footer_text', 'support_email', 'support_phone'],
             'registration' => ['default_plan_slug', 'tenant_domain_suffix'],
             'general' => ['default_currency', 'default_timezone', 'social_facebook', 'social_x', 'social_instagram'],
@@ -110,6 +116,17 @@ class SettingsController extends Controller
 
         if ($request->hasFile('favicon')) {
             $this->replaceFile('favicon_path', $request->file('favicon')->store('platform/branding', 'public'));
+        }
+
+        $this->settings->flush();
+
+        // admin_path / owner_path affect routing; rebuild the route cache.
+        if (class_exists(\Illuminate\Support\Facades\Artisan::class)) {
+            try {
+                Artisan::call('route:clear');
+            } catch (\Throwable $e) {
+                // ignored in environments where route:clear is not applicable
+            }
         }
 
         return back()->with('status', 'Settings updated.');

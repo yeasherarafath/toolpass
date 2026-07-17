@@ -6,6 +6,7 @@ use Stancl\Tenancy\Database\Models\Tenant as BaseTenant;
 use Stancl\Tenancy\Contracts\TenantWithDatabase;
 use Stancl\Tenancy\Database\Concerns\HasDatabase;
 use Stancl\Tenancy\Database\Concerns\HasDomains;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Tenant extends BaseTenant implements TenantWithDatabase
@@ -44,5 +45,10 @@ class Tenant extends BaseTenant implements TenantWithDatabase
     public function owner(): HasMany
     {
         return $this->hasMany(Owner::class, 'tenant_id', 'id');
+    }
+
+    public function users(): HasMany
+    {
+        return $this->hasMany(User::class, 'tenant_id', 'id');
     }
 }

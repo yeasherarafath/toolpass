@@ -8,7 +8,7 @@
     <div class="col-lg-8">
         <div class="card">
             <div class="card-body">
-                <form method="POST" action="{{ route('admin.packages.update', $package) }}">
+                <form method="POST" action="{{ route('business.packages.update', $package) }}">
                     @csrf @method('PUT')
                     <div class="mb-3">
                         <label class="form-label">Name</label>
@@ -99,7 +99,7 @@
                         </select>
                     </div>
                     <button class="btn btn-primary">Update</button>
-                    <a href="{{ route('admin.packages.index') }}" class="btn btn-ghost-secondary">Cancel</a>
+                    <a href="{{ route('business.packages.index') }}" class="btn btn-ghost-secondary">Cancel</a>
                 </form>
             </div>
         </div>
@@ -124,7 +124,7 @@
                                         <td>{{ $field->is_required ? 'Yes' : 'No' }}</td>
                                         <td><span class="badge bg-{{ $field->status === 'active' ? 'green' : 'yellow' }}-lt">{{ $field->status }}</span></td>
                                         <td>
-                                            <form method="POST" action="{{ route('admin.packages.custom-fields.destroy', [$package, $field]) }}" onsubmit="return confirm('Remove field?');">
+                                            <form method="POST" action="{{ route('business.packages.custom-fields.destroy', [$package, $field]) }}" onsubmit="return confirm('Remove field?');">
                                                 @csrf @method('DELETE')
                                                 <button class="btn btn-sm btn-ghost-danger">Remove</button>
                                             </form>
@@ -136,7 +136,7 @@
                     </div>
                 @endif
 
-                <form method="POST" action="{{ route('admin.packages.custom-fields.store', $package) }}">
+                <form method="POST" action="{{ route('business.packages.custom-fields.store', $package) }}">
                     @csrf
                     <div class="row g-2 align-items-end">
                         <div class="col">

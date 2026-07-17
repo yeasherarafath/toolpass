@@ -22,7 +22,7 @@
                             <td><span class="badge bg-info">{{ $task->type }}</span></td>
                             <td>{{ $task->priority }}</td>
                             <td><span class="badge bg-secondary">{{ $task->status }}</span></td>
-                            <td><a href="{{ route('admin.tasks.show', $task) }}" class="btn btn-sm btn-primary">View</a></td>
+                            <td><a href="{{ route('business.tasks.show', $task) }}" class="btn btn-sm btn-primary">View</a></td>
                         </tr>
                     @empty
                         <tr><td colspan="5" class="text-center text-secondary">No open tasks.</td></tr>

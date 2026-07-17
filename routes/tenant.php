@@ -26,6 +26,7 @@ use App\Http\Controllers\Customer\ReviewController as CustomerReviewController;
 use App\Http\Controllers\Customer\OtpController as CustomerOtpController;
 use App\Http\Controllers\Customer\DeviceController as CustomerDeviceController;
 use App\Http\Controllers\Customer\SupportController as CustomerSupportController;
+use App\Http\Controllers\ImpersonationController;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyBySubdomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
@@ -40,7 +41,9 @@ Route::middleware([
     'web',
     InitializeTenancyBySubdomain::class,
     PreventAccessFromCentralDomains::class,
-])->group(function () {
+    ])->group(function () {
+
+    Route::get('/impersonate/{token}', [ImpersonationController::class, 'enter'])->name('impersonate.enter');
 
     Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -59,7 +62,7 @@ Route::middleware([
 
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-        Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
+        Route::middleware('role:admin')->prefix('business')->name('business.')->group(function () {
             Route::get('/', [DashboardController::class, 'admin'])->name('dashboard');
 
             Route::get('/users', [UserController::class, 'index'])->name('users.index');

@@ -15,7 +15,7 @@
                 <div class="card-header">
                     <h3 class="card-title">All tools</h3>
                     <div class="card-actions">
-                        <a href="{{ route('admin.tools.create') }}" class="btn btn-primary"><i class="ti ti-plus"></i> Add</a>
+                        <a href="{{ route('business.tools.create') }}" class="btn btn-primary"><i class="ti ti-plus"></i> Add</a>
                     </div>
                 </div>
                 <div class="card-body border-0 p-0">
@@ -40,8 +40,8 @@
                                         <td>{{ $tool->otp_required ? 'Yes' : 'No' }}</td>
                                         <td><span class="badge bg-{{ $tool->status === 'active' ? 'green' : 'yellow' }}-lt">{{ $tool->status }}</span></td>
                                         <td>
-                                            <a href="{{ route('admin.tools.edit', $tool) }}" class="btn btn-sm btn-ghost-secondary">Edit</a>
-                                            <form method="POST" action="{{ route('admin.tools.destroy', $tool) }}" class="d-inline" onsubmit="return confirm('Delete?');">
+                                            <a href="{{ route('business.tools.edit', $tool) }}" class="btn btn-sm btn-ghost-secondary">Edit</a>
+                                            <form method="POST" action="{{ route('business.tools.destroy', $tool) }}" class="d-inline" onsubmit="return confirm('Delete?');">
                                                 @csrf @method('DELETE')
                                                 <button class="btn btn-sm btn-ghost-danger">Delete</button>
                                             </form>

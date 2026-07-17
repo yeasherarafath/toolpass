@@ -50,7 +50,7 @@ class PackageController extends Controller
 
         app(CreatePackageAction::class)($data);
 
-        return redirect()->route('admin.packages.index')->with('status', 'Package created.');
+        return redirect()->route('business.packages.index')->with('status', 'Package created.');
     }
 
     public function edit(Package $package)
@@ -85,13 +85,13 @@ class PackageController extends Controller
 
         app(UpdatePackageAction::class)($package, $data);
 
-        return redirect()->route('admin.packages.index')->with('status', 'Package updated.');
+        return redirect()->route('business.packages.index')->with('status', 'Package updated.');
     }
 
     public function destroy(Package $package)
     {
         app(DeletePackageAction::class)($package);
 
-        return redirect()->route('admin.packages.index')->with('status', 'Package deleted.');
+        return redirect()->route('business.packages.index')->with('status', 'Package deleted.');
     }
 }

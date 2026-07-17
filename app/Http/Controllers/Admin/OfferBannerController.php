@@ -32,7 +32,7 @@ class OfferBannerController extends Controller
 
         OfferBanner::create($data);
 
-        return redirect()->route('admin.offer-banners.index')->with('status', 'Banner created.');
+        return redirect()->route('business.offer-banners.index')->with('status', 'Banner created.');
     }
 
     public function edit(OfferBanner $offerBanner)
@@ -54,7 +54,7 @@ class OfferBannerController extends Controller
 
         $offerBanner->update($data);
 
-        return redirect()->route('admin.offer-banners.index')->with('status', 'Banner updated.');
+        return redirect()->route('business.offer-banners.index')->with('status', 'Banner updated.');
     }
 
     public function destroy(OfferBanner $offerBanner)
@@ -65,7 +65,7 @@ class OfferBannerController extends Controller
 
         $offerBanner->delete();
 
-        return redirect()->route('admin.offer-banners.index')->with('status', 'Banner deleted.');
+        return redirect()->route('business.offer-banners.index')->with('status', 'Banner deleted.');
     }
 
     protected function validateData(Request $request): array

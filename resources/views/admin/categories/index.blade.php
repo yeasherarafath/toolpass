@@ -15,7 +15,7 @@
                 <div class="card-header">
                     <h3 class="card-title">Categories</h3>
                     <div class="card-actions">
-                        <a href="{{ route('admin.categories.create') }}" class="btn btn-primary"><i class="ti ti-plus"></i> Add</a>
+                        <a href="{{ route('business.categories.create') }}" class="btn btn-primary"><i class="ti ti-plus"></i> Add</a>
                     </div>
                 </div>
                 <div class="card-body border-0 p-0">
@@ -38,8 +38,8 @@
                                         <td><span class="badge bg-{{ $category->status === 'active' ? 'green' : 'yellow' }}-lt">{{ $category->status }}</span></td>
                                         <td>{{ $category->sort_order }}</td>
                                         <td>
-                                            <a href="{{ route('admin.categories.edit', $category) }}" class="btn btn-sm btn-ghost-secondary">Edit</a>
-                                            <form method="POST" action="{{ route('admin.categories.destroy', $category) }}" class="d-inline" onsubmit="return confirm('Delete?');">
+                                            <a href="{{ route('business.categories.edit', $category) }}" class="btn btn-sm btn-ghost-secondary">Edit</a>
+                                            <form method="POST" action="{{ route('business.categories.destroy', $category) }}" class="d-inline" onsubmit="return confirm('Delete?');">
                                                 @csrf @method('DELETE')
                                                 <button class="btn btn-sm btn-ghost-danger">Delete</button>
                                             </form>

@@ -30,7 +30,7 @@
                         </ul>
 
                         @if ($order->required_info_status !== 'approved' && $order->required_info_status !== 'rejected')
-                            <form method="POST" action="{{ route('admin.orders.review-info', $order) }}">
+                            <form method="POST" action="{{ route('business.orders.review-info', $order) }}">
                                 @csrf
                                 <div class="mb-3">
                                     <label class="form-label">Reason (if rejecting)</label>
@@ -54,11 +54,11 @@
                             <div>{{ $payment->amount }} {{ $payment->currency }} &middot; {{ $payment->method }}</div>
                             <div class="text-secondary">{{ $payment->status }}</div>
                             @if ($payment->status === 'pending')
-                                <form method="POST" action="{{ route('admin.payments.verify', $payment) }}" class="d-inline">
+                                <form method="POST" action="{{ route('business.payments.verify', $payment) }}" class="d-inline">
                                     @csrf
                                     <button class="btn btn-sm btn-success">Verify</button>
                                 </form>
-                                <form method="POST" action="{{ route('admin.payments.reject', $payment) }}" class="d-inline">
+                                <form method="POST" action="{{ route('business.payments.reject', $payment) }}" class="d-inline">
                                     @csrf
                                     <button class="btn btn-sm btn-danger">Reject</button>
                                 </form>
@@ -85,7 +85,7 @@
                                 <div class="text-secondary">Account: {{ $access->toolAccount->name }}</div>
                             @endif
                             @if ($access->delivery_status !== 'delivered')
-                                <form method="POST" action="{{ route('admin.accesses.deliver', $access) }}">
+                                <form method="POST" action="{{ route('business.accesses.deliver', $access) }}">
                                     @csrf
                                     <button class="btn btn-sm btn-primary">Deliver</button>
                                 </form>

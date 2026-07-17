@@ -24,7 +24,7 @@
                             <td><span class="badge bg-secondary">{{ $review->status }}</span></td>
                             <td>
                                 @if ($review->status === 'pending')
-                                    <form method="POST" action="{{ route('admin.reviews.moderate', $review) }}" class="d-inline">
+                                    <form method="POST" action="{{ route('business.reviews.moderate', $review) }}" class="d-inline">
                                         @csrf
                                         <button name="decision" value="approve" class="btn btn-sm btn-success">Approve</button>
                                         <button name="decision" value="reject" class="btn btn-sm btn-danger">Reject</button>

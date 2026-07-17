@@ -94,7 +94,7 @@ class OperationalModulesTest extends TenantTestCase
         ]);
 
         $this->actingAs($admin)
-            ->post(route('admin.otp.provide', $request))
+            ->post(route('business.otp.provide', $request))
             ->assertRedirect();
 
         $request->refresh();
@@ -147,7 +147,7 @@ class OperationalModulesTest extends TenantTestCase
         ]);
 
         $this->actingAs($admin)
-            ->post(route('admin.device-resets.complete', $reset))
+            ->post(route('business.device-resets.complete', $reset))
             ->assertRedirect();
 
         $device->refresh();
@@ -178,14 +178,14 @@ class OperationalModulesTest extends TenantTestCase
         ]);
 
         $this->actingAs($admin)
-            ->post(route('admin.support.reply', $ticket), ['message' => 'We are on it'])
+            ->post(route('business.support.reply', $ticket), ['message' => 'We are on it'])
             ->assertRedirect();
 
         $ticket->refresh();
         $this->assertEquals('pending_customer', $ticket->status);
 
         $this->actingAs($admin)
-            ->post(route('admin.support.close', $ticket))
+            ->post(route('business.support.close', $ticket))
             ->assertRedirect();
 
         $ticket->refresh();

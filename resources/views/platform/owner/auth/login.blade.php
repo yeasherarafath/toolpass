@@ -6,7 +6,7 @@
         <p class="text-secondary">Business owner sign in</p>
     </div>
 
-    <form method="POST" action="{{ route('platform.login.attempt') }}">
+    <form method="POST" action="{{ route('owner.login.attempt') }}">
         @csrf
         <div class="mb-3">
             <label class="form-label">Email address</label>
@@ -38,7 +38,7 @@
 
     @if (app(\App\Services\Settings::class)->bool('allow_owner_registration'))
         <div class="text-center text-secondary mt-3">
-            New here? <a href="{{ route('platform.register') }}">Create a business account</a>
+            New here? <a href="{{ route('owner.register') }}">Create a business account</a>
         </div>
     @endif
 @endsection

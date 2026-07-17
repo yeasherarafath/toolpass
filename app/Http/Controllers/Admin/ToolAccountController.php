@@ -49,7 +49,7 @@ class ToolAccountController extends Controller
 
         app(CreateToolAccountAction::class)($data);
 
-        return redirect()->route('admin.tool-accounts.index')->with('status', 'Tool account created.');
+        return redirect()->route('business.tool-accounts.index')->with('status', 'Tool account created.');
     }
 
     public function edit(ToolAccount $toolAccount)
@@ -82,13 +82,13 @@ class ToolAccountController extends Controller
 
         app(UpdateToolAccountAction::class)($toolAccount, $data);
 
-        return redirect()->route('admin.tool-accounts.index')->with('status', 'Tool account updated.');
+        return redirect()->route('business.tool-accounts.index')->with('status', 'Tool account updated.');
     }
 
     public function destroy(ToolAccount $toolAccount)
     {
         app(DeleteToolAccountAction::class)($toolAccount);
 
-        return redirect()->route('admin.tool-accounts.index')->with('status', 'Tool account deleted.');
+        return redirect()->route('business.tool-accounts.index')->with('status', 'Tool account deleted.');
     }
 }

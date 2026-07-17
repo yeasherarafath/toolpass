@@ -21,7 +21,7 @@ class AuthTest extends TenantTestCase
             'password' => 'secret123',
         ]);
 
-        $response->assertRedirect(route('admin.dashboard'));
+        $response->assertRedirect(route('business.dashboard'));
         $this->assertAuthenticatedAs($admin);
     }
 
@@ -65,7 +65,7 @@ class AuthTest extends TenantTestCase
 
     public function test_guest_is_redirected_from_admin(): void
     {
-        $this->get('/admin')->assertRedirect('/login');
+        $this->get('/business')->assertRedirect('/login');
     }
 
     public function test_role_gate_blocks_wrong_role(): void

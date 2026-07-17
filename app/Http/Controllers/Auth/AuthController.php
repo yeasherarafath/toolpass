@@ -32,7 +32,9 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route($user->role . '.dashboard'));
+        $dashboardRoute = $user->role === 'admin' ? 'business.dashboard' : $user->role . '.dashboard';
+
+        return redirect()->intended(route($dashboardRoute));
     }
 
     public function showRegister()

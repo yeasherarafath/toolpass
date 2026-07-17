@@ -6,7 +6,7 @@
         <p class="text-secondary">Create your business account</p>
     </div>
 
-    <form method="POST" action="{{ route('platform.register.attempt') }}">
+    <form method="POST" action="{{ route('owner.register.attempt') }}">
         @csrf
         <div class="mb-3">
             <label class="form-label">Your name</label>
@@ -50,6 +50,6 @@
     </form>
 
     <div class="text-center text-secondary mt-3">
-        Already have an account? <a href="{{ route('platform.login') }}">Sign in</a>
+        Already have an account? <a href="{{ route('owner.login') }}">Sign in</a>
     </div>
 @endsection

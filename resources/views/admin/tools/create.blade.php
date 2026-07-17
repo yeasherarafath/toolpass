@@ -8,7 +8,7 @@
     <div class="col-lg-8">
         <div class="card">
             <div class="card-body">
-                <form method="POST" action="{{ route('admin.tools.store') }}">
+                <form method="POST" action="{{ route('business.tools.store') }}">
                     @csrf
                     <div class="mb-3">
                         <label class="form-label">Category</label>
@@ -99,7 +99,7 @@
                         <textarea name="device_policy_note" class="form-control">{{ old('device_policy_note') }}</textarea>
                     </div>
                     <button class="btn btn-primary">Save</button>
-                    <a href="{{ route('admin.tools.index') }}" class="btn btn-ghost-secondary">Cancel</a>
+                    <a href="{{ route('business.tools.index') }}" class="btn btn-ghost-secondary">Cancel</a>
                 </form>
             </div>
         </div>

@@ -28,7 +28,7 @@ class PackageTest extends TenantTestCase
         $tool = $this->makeTool();
 
         $this->actingAs($this->admin())
-            ->post(route('admin.packages.store'), [
+            ->post(route('business.packages.store'), [
                 'name' => 'SEO Bundle',
                 'type' => 'bundle',
                 'delivery_type' => 'instant',
@@ -38,7 +38,7 @@ class PackageTest extends TenantTestCase
                 'duration_days' => 30,
                 'tools' => [$tool->id],
             ])
-            ->assertRedirect(route('admin.packages.index'));
+            ->assertRedirect(route('business.packages.index'));
 
         $package = Package::where('name', 'SEO Bundle')->first();
         $this->assertSame('seo-bundle', $package->slug);
@@ -50,14 +50,14 @@ class PackageTest extends TenantTestCase
         $package = Package::factory()->create();
 
         $this->actingAs($this->admin())
-            ->post(route('admin.packages.custom-fields.store', $package), [
+            ->post(route('business.packages.custom-fields.store', $package), [
                 'label' => 'Invite Email',
                 'name' => 'invite_email',
                 'type' => 'email',
                 'status' => 'active',
                 'is_required' => '1',
             ])
-            ->assertRedirect(route('admin.packages.edit', $package));
+            ->assertRedirect(route('business.packages.edit', $package));
 
         $this->assertDatabaseHas('package_custom_fields', [
             'package_id' => $package->id,
@@ -71,8 +71,8 @@ class PackageTest extends TenantTestCase
         $field = \App\Models\PackageCustomField::factory()->create(['package_id' => $package->id]);
 
         $this->actingAs($this->admin())
-            ->delete(route('admin.packages.custom-fields.destroy', [$package, $field]))
-            ->assertRedirect(route('admin.packages.edit', $package));
+            ->delete(route('business.packages.custom-fields.destroy', [$package, $field]))
+            ->assertRedirect(route('business.packages.edit', $package));
 
         $this->assertSoftDeleted('package_custom_fields', ['id' => $field->id]);
     }
@@ -82,8 +82,8 @@ class PackageTest extends TenantTestCase
         $package = Package::factory()->create();
 
         $this->actingAs($this->admin())
-            ->delete(route('admin.packages.destroy', $package))
-            ->assertRedirect(route('admin.packages.index'));
+            ->delete(route('business.packages.destroy', $package))
+            ->assertRedirect(route('business.packages.index'));
 
         $this->assertSoftDeleted('packages', ['id' => $package->id]);
     }

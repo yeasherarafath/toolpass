@@ -22,7 +22,7 @@
                             <td>{{ $ticket->user?->name }}</td>
                             <td>{{ $ticket->subject }}</td>
                             <td><span class="badge bg-secondary">{{ $ticket->status }}</span></td>
-                            <td><a href="{{ route('admin.support.show', $ticket) }}" class="btn btn-sm btn-primary">Manage</a></td>
+                            <td><a href="{{ route('business.support.show', $ticket) }}" class="btn btn-sm btn-primary">Manage</a></td>
                         </tr>
                     @empty
                         <tr><td colspan="5" class="text-center text-secondary">No tickets.</td></tr>

@@ -18,14 +18,14 @@ class AdminUserManagementTest extends TenantTestCase
     public function test_admin_can_view_users(): void
     {
         $this->actingAs($this->admin())
-            ->get(route('admin.users.index'))
+            ->get(route('business.users.index'))
             ->assertOk();
     }
 
     public function test_admin_can_create_user(): void
     {
         $this->actingAs($this->admin())
-            ->post(route('admin.users.store'), [
+            ->post(route('business.users.store'), [
                 'name' => 'Jane Staff',
                 'email' => 'jane@example.com',
                 'phone' => '01722222222',
@@ -33,7 +33,7 @@ class AdminUserManagementTest extends TenantTestCase
                 'status' => 'active',
                 'password' => 'secret123',
             ])
-            ->assertRedirect(route('admin.users.index'));
+            ->assertRedirect(route('business.users.index'));
 
         $this->assertDatabaseHas('users', ['email' => 'jane@example.com', 'role' => 'staff']);
     }
@@ -44,7 +44,7 @@ class AdminUserManagementTest extends TenantTestCase
         $user = User::factory()->create(['status' => 'active']);
 
         $this->actingAs($admin)
-            ->post(route('admin.users.toggle-status', $user))
+            ->post(route('business.users.toggle-status', $user))
             ->assertRedirect();
 
         $this->assertDatabaseHas('users', ['id' => $user->id, 'status' => 'suspended']);
@@ -55,7 +55,7 @@ class AdminUserManagementTest extends TenantTestCase
         $admin = $this->admin();
 
         $this->actingAs($admin)
-            ->post(route('admin.users.toggle-status', $admin))
+            ->post(route('business.users.toggle-status', $admin))
             ->assertSessionHasErrors('status');
 
         $this->assertDatabaseHas('users', ['id' => $admin->id, 'status' => 'active']);

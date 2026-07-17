@@ -15,7 +15,7 @@
                 <div class="card-header">
                     <h3 class="card-title">All users</h3>
                     <div class="card-actions">
-                        <a href="{{ route('admin.users.create') }}" class="btn btn-primary">
+                        <a href="{{ route('business.users.create') }}" class="btn btn-primary">
                             <i class="ti ti-plus"></i> Add user
                         </a>
                     </div>
@@ -48,7 +48,7 @@
                                             </span>
                                         </td>
                                         <td>
-                                            <form method="POST" action="{{ route('admin.users.toggle-status', $user) }}">
+                                            <form method="POST" action="{{ route('business.users.toggle-status', $user) }}">
                                                 @csrf
                                                 <button type="submit" class="btn btn-sm btn-ghost-secondary">
                                                     {{ $user->status === 'active' ? 'Suspend' : 'Activate' }}

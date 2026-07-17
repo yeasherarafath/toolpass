@@ -28,13 +28,13 @@ class PackageCustomFieldController extends Controller
 
         app(AddPackageCustomFieldAction::class)($package, $data);
 
-        return redirect()->route('admin.packages.edit', $package)->with('status', 'Custom field added.');
+        return redirect()->route('business.packages.edit', $package)->with('status', 'Custom field added.');
     }
 
     public function destroy(Request $request, Package $package, PackageCustomField $field)
     {
         app(RemovePackageCustomFieldAction::class)($package, $field);
 
-        return redirect()->route('admin.packages.edit', $package)->with('status', 'Custom field removed.');
+        return redirect()->route('business.packages.edit', $package)->with('status', 'Custom field removed.');
     }
 }

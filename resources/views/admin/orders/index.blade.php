@@ -31,7 +31,7 @@
                             <td><span class="badge bg-{{ $order->payment_status === 'paid' ? 'success' : 'warning' }}">{{ $order->payment_status }}</span></td>
                             <td><span class="badge bg-info">{{ $order->required_info_status }}</span></td>
                             <td class="text-end">
-                                <a href="{{ route('admin.orders.show', $order) }}" class="btn btn-sm btn-primary">Manage</a>
+                                <a href="{{ route('business.orders.show', $order) }}" class="btn btn-sm btn-primary">Manage</a>
                             </td>
                         </tr>
                     @empty

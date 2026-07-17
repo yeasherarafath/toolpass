@@ -38,7 +38,7 @@ class PlatformSeeder extends Seeder
         $platformStaff = Role::findOrCreate('platform_staff', 'admin');
 
         $superAdmin->syncPermissions($permissions);
-        $platformStaff->syncPermissions(['view-platform', 'send-mail', 'manage-settings']);
+        $platformStaff->syncPermissions(['view-platform', 'send-mail']);
 
         $admin = Admin::updateOrCreate(
             ['email' => 'superadmin@toolpass.test'],

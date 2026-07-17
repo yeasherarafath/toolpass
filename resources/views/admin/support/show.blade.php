@@ -21,12 +21,12 @@
             @endforeach
 
             @if ($ticket->status !== 'closed')
-                <form method="POST" action="{{ route('admin.support.reply', $ticket) }}" class="d-inline">
+                <form method="POST" action="{{ route('business.support.reply', $ticket) }}" class="d-inline">
                     @csrf
                     <textarea name="message" class="form-control mb-2" placeholder="Reply to customer" required></textarea>
                     <button class="btn btn-primary">Reply</button>
                 </form>
-                <form method="POST" action="{{ route('admin.support.close', $ticket) }}" class="d-inline">
+                <form method="POST" action="{{ route('business.support.close', $ticket) }}" class="d-inline">
                     @csrf
                     <button class="btn btn-danger">Close</button>
                 </form>

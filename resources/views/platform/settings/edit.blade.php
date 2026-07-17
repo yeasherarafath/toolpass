@@ -5,7 +5,7 @@
 @section('header')
     <div class="d-flex justify-content-between align-items-center">
         <h2 class="page-title">Platform Settings</h2>
-        <a href="{{ route('platform.dashboard') }}" class="btn btn-outline-secondary btn-sm">Back to dashboard</a>
+        <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary btn-sm">Back to dashboard</a>
     </div>
 @endsection
 
@@ -14,7 +14,7 @@
         <div class="alert alert-success">{{ session('status') }}</div>
     @endif
 
-    <form method="POST" action="{{ route('platform.settings.update') }}" enctype="multipart/form-data">
+    <form method="POST" action="{{ route('admin.settings.update') }}" enctype="multipart/form-data">
         @csrf
         @method('PUT')
 
@@ -26,6 +26,7 @@
                     <li class="nav-item"><a href="#tab-general" class="nav-link" data-bs-toggle="tab">General</a></li>
                     <li class="nav-item"><a href="#tab-mail" class="nav-link" data-bs-toggle="tab">Mail</a></li>
                     <li class="nav-item"><a href="#tab-sms" class="nav-link" data-bs-toggle="tab">SMS</a></li>
+                    <li class="nav-item"><a href="#tab-access" class="nav-link" data-bs-toggle="tab">Access</a></li>
                 </ul>
             </div>
             <div class="card-body">
@@ -185,6 +186,32 @@
                         <div class="mb-3">
                             <label class="form-label">Sender ID</label>
                             <input type="text" name="sms.sender_id" class="form-control" value="{{ old('sms.sender_id', $settings['sms.sender_id'] ?? '') }}">
+                        </div>
+                    </div>
+
+                    {{-- Access --}}
+                    <div class="tab-pane" id="tab-access">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Admin login path</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">/</span>
+                                    <input type="text" name="admin_path" class="form-control" value="{{ old('admin_path', $settings['admin_path'] ?? 'yatpmin') }}">
+                                </div>
+                                <div class="form-hint">Changing this updates the admin login URL. Route cache is cleared on save.</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Owner login path</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">/</span>
+                                    <input type="text" name="owner_path" class="form-control" value="{{ old('owner_path', $settings['owner_path'] ?? 'business') }}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Reserved subdomains</label>
+                            <textarea name="reserved_slugs" class="form-control" rows="3">{{ old('reserved_slugs', $settings['reserved_slugs'] ?? '') }}</textarea>
+                            <div class="form-hint">Comma-separated subdomains that cannot be used by businesses.</div>
                         </div>
                     </div>
                 </div>

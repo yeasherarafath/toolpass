@@ -8,7 +8,7 @@
     <div class="col-md-8 col-lg-6">
         <div class="card">
             <div class="card-body">
-                <form method="POST" action="{{ route('admin.categories.update', $category) }}">
+                <form method="POST" action="{{ route('business.categories.update', $category) }}">
                     @csrf @method('PUT')
                     <div class="mb-3">
                         <label class="form-label">Name</label>
@@ -36,7 +36,7 @@
                         <input type="number" name="sort_order" value="{{ old('sort_order', $category->sort_order) }}" class="form-control">
                     </div>
                     <button class="btn btn-primary">Update</button>
-                    <a href="{{ route('admin.categories.index') }}" class="btn btn-ghost-secondary">Cancel</a>
+                    <a href="{{ route('business.categories.index') }}" class="btn btn-ghost-secondary">Cancel</a>
                 </form>
             </div>
         </div>

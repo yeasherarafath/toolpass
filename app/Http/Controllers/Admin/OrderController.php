@@ -61,7 +61,7 @@ class OrderController extends Controller
             $validated['reason'] ?? null
         );
 
-        return redirect()->route('admin.orders.show', $order)
+        return redirect()->route('business.orders.show', $order)
             ->with('success', 'Required information ' . $validated['decision'] . 'd.');
     }
 
@@ -69,7 +69,7 @@ class OrderController extends Controller
     {
         app(VerifyPaymentAction::class)->handle($payment, Auth::user());
 
-        return redirect()->route('admin.orders.show', $payment->order_id)
+        return redirect()->route('business.orders.show', $payment->order_id)
             ->with('success', 'Payment verified.');
     }
 
@@ -81,7 +81,7 @@ class OrderController extends Controller
 
         app(RejectPaymentAction::class)->handle($payment, Auth::user(), $validated['reason'] ?? null);
 
-        return redirect()->route('admin.orders.show', $payment->order_id)
+        return redirect()->route('business.orders.show', $payment->order_id)
             ->with('success', 'Payment rejected.');
     }
 

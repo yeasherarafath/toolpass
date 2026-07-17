@@ -24,7 +24,7 @@
             @endif
 
             @if ($task->status !== 'completed' && $task->status !== 'cancelled')
-                <form method="POST" action="{{ route('admin.tasks.complete', $task) }}">
+                <form method="POST" action="{{ route('business.tasks.complete', $task) }}">
                     @csrf
                     <button class="btn btn-success">Complete</button>
                 </form>

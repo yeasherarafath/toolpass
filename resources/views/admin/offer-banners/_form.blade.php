@@ -37,7 +37,7 @@
         </div>
     </div>
     <div class="card-footer text-end">
-        <a href="{{ route('admin.offer-banners.index') }}" class="btn btn-link">Cancel</a>
+        <a href="{{ route('business.offer-banners.index') }}" class="btn btn-link">Cancel</a>
         <button type="submit" class="btn btn-primary">Save</button>
     </div>
 </div>

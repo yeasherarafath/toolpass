@@ -5,7 +5,7 @@
 @endsection
 
 @section('content')
-    <form method="POST" action="{{ route('admin.offer-banners.store') }}" enctype="multipart/form-data">
+    <form method="POST" action="{{ route('business.offer-banners.store') }}" enctype="multipart/form-data">
         @csrf
         @include('admin.offer-banners._form', ['banner' => null])
     </form>

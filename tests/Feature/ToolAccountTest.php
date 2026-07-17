@@ -31,14 +31,14 @@ class ToolAccountTest extends TenantTestCase
         $tool = $this->makeTool();
 
         $this->actingAs($this->admin())
-            ->post(route('admin.tool-accounts.store'), [
+            ->post(route('business.tool-accounts.store'), [
                 'tool_id' => $tool->id,
                 'name' => 'Acct One',
                 'login_email' => 'owner@example.com',
                 'login_password' => 'topsecret',
                 'status' => 'active',
             ])
-            ->assertRedirect(route('admin.tool-accounts.index'));
+            ->assertRedirect(route('business.tool-accounts.index'));
 
         $account = ToolAccount::where('name', 'Acct One')->first();
         $this->assertNotSame('topsecret', $account->login_password_encrypted);
@@ -51,7 +51,7 @@ class ToolAccountTest extends TenantTestCase
         $tool = $this->makeTool();
 
         $this->actingAs($admin)
-            ->post(route('admin.tool-accounts.store'), [
+            ->post(route('business.tool-accounts.store'), [
                 'tool_id' => $tool->id,
                 'name' => 'Acct Two',
                 'status' => 'active',
@@ -66,7 +66,7 @@ class ToolAccountTest extends TenantTestCase
         $tool = $this->makeTool();
 
         $this->actingAs($this->admin())
-            ->post(route('admin.tool-accounts.store'), [
+            ->post(route('business.tool-accounts.store'), [
                 'tool_id' => $tool->id,
                 'name' => 'Acct Evt',
                 'status' => 'active',
@@ -84,7 +84,7 @@ class ToolAccountTest extends TenantTestCase
         ]);
 
         $this->actingAs($this->admin())
-            ->put(route('admin.tool-accounts.update', $account), [
+            ->put(route('business.tool-accounts.update', $account), [
                 'tool_id' => $tool->id,
                 'name' => 'Acct Upd',
                 'status' => 'active',
@@ -99,8 +99,8 @@ class ToolAccountTest extends TenantTestCase
         $account = ToolAccount::factory()->create(['tool_id' => $tool->id]);
 
         $this->actingAs($this->admin())
-            ->delete(route('admin.tool-accounts.destroy', $account))
-            ->assertRedirect(route('admin.tool-accounts.index'));
+            ->delete(route('business.tool-accounts.destroy', $account))
+            ->assertRedirect(route('business.tool-accounts.index'));
 
         $this->assertSoftDeleted('tool_accounts', ['id' => $account->id]);
     }
