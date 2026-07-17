@@ -19,7 +19,7 @@ class OwnerController extends Controller
 
     public function create()
     {
-        $tenants = Tenant::all();
+        $tenants = Tenant::getCached(null, 'id', ['*'], 3600);
 
         return view('platform.admin.owners.create', compact('tenants'));
     }
@@ -46,7 +46,7 @@ class OwnerController extends Controller
 
     public function edit(Owner $owner)
     {
-        $tenants = Tenant::all();
+        $tenants = Tenant::getCached(null, 'id', ['*'], 3600);
 
         return view('platform.admin.owners.edit', compact('owner', 'tenants'));
     }

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Platform\AdminAuthController;
 use App\Http\Controllers\Platform\AdminController;
+use App\Http\Controllers\Platform\CacheController;
 use App\Http\Controllers\Platform\AdminDashboardController;
 use App\Http\Controllers\Platform\AdminSubscribeController;
 use App\Http\Controllers\Platform\ImpersonationController;
@@ -85,6 +86,15 @@ foreach (config('tenancy.central_domains') as $domain) {
                 Route::middleware('can:manage-settings')->group(function () {
                     Route::get('/settings', [SettingsController::class, 'edit'])->name('settings.edit');
                     Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
+                });
+
+                // Cache management (group / sub-module / all)
+                Route::prefix('cache')->name('cache.')->middleware('can:manage-settings')->group(function () {
+                    Route::get('/', [CacheController::class, 'index'])->name('index');
+                    Route::post('clear/{group}/{subModule?}', [CacheController::class, 'clearSubModule'])->name('clear.sub');
+                    Route::post('clear-group/{group}', [CacheController::class, 'clearGroup'])->name('clear.group');
+                    Route::post('clear-all', [CacheController::class, 'clearAll'])->name('clear.all');
+                    Route::post('validate', [CacheController::class, 'validateStructure'])->name('validate');
                 });
             });
         });

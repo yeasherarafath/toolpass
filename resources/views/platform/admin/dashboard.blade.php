@@ -42,6 +42,7 @@
                         <a href="{{ route('admin.tenants.index') }}" class="list-group-item list-group-item-action">Tenants</a>
                         <a href="{{ route('admin.subscribe.create') }}" class="list-group-item list-group-item-action">Subscribe owner</a>
                         <a href="{{ route('admin.settings.edit') }}" class="list-group-item list-group-item-action">Platform settings</a>
+                        <a href="{{ route('admin.cache.index') }}" class="list-group-item list-group-item-action">Cache management</a>
                     </div>
                 </div>
             </div>

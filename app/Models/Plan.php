@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Subscription;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Traits\ModelCache;
 
 /**
  * Plan model (central DB).
@@ -29,6 +30,7 @@ class Plan extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    use ModelCache;
 
     protected $connection = 'central';
 

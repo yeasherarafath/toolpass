@@ -10,7 +10,7 @@ class PlanController extends Controller
 {
     public function index()
     {
-        $plans = Plan::query()->orderBy('sort_order')->get();
+        $plans = Plan::getCached(null, 'id', ['*'], 3600);
 
         return view('platform.admin.plans.index', compact('plans'));
     }

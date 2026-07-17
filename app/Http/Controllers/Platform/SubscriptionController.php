@@ -23,9 +23,9 @@ class SubscriptionController extends Controller
 
     public function create()
     {
-        $owners = Owner::orderBy('name')->get();
-        $plans = Plan::where('status', 'active')->orderBy('sort_order')->get();
-        $tenants = Tenant::all();
+        $owners = Owner::getCached(null, 'id', ['*'], 3600);
+        $plans = Plan::getCached('active', 'status', ['*'], 3600);
+        $tenants = Tenant::getCached(null, 'id', ['*'], 3600);
 
         return view('platform.admin.subscriptions.create', compact('owners', 'plans', 'tenants'));
     }
@@ -58,9 +58,9 @@ class SubscriptionController extends Controller
 
     public function edit(Subscription $subscription)
     {
-        $owners = Owner::orderBy('name')->get();
-        $plans = Plan::orderBy('sort_order')->get();
-        $tenants = Tenant::all();
+        $owners = Owner::getCached(null, 'id', ['*'], 3600);
+        $plans = Plan::getCached(null, 'id', ['*'], 3600);
+        $tenants = Tenant::getCached(null, 'id', ['*'], 3600);
 
         return view('platform.admin.subscriptions.edit', compact('subscription', 'owners', 'plans', 'tenants'));
     }

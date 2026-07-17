@@ -7,6 +7,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Permission\Traits\HasRoles;
+use App\Traits\ModelCache;
 use App\Models\Tenant;
 use App\Models\Subscription;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -18,6 +19,7 @@ class Owner extends Authenticatable
     use SoftDeletes;
     use Notifiable;
     use HasRoles;
+    use ModelCache;
 
     protected $connection = 'central';
 

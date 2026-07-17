@@ -7,12 +7,14 @@ use Stancl\Tenancy\Contracts\TenantWithDatabase;
 use Stancl\Tenancy\Database\Concerns\HasDatabase;
 use Stancl\Tenancy\Database\Concerns\HasDomains;
 use App\Models\User;
+use App\Traits\ModelCache;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Tenant extends BaseTenant implements TenantWithDatabase
 {
     use HasDatabase;
     use HasDomains;
+    use ModelCache;
 
     protected $casts = [
         'data' => 'array',
