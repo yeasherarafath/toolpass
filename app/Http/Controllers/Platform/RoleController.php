@@ -45,6 +45,7 @@ class RoleController extends Controller
 
     public function edit(Role $role)
     {
+        $role->load('permissions');
         $permissions = $this->permissionsList();
 
         return view('platform.admin.roles.edit', compact('role', 'permissions'));

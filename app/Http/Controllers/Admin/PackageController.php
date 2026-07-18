@@ -2,16 +2,22 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enum\CacheKeyEnum;
 use App\Http\Controllers\Controller;
 use App\Actions\Package\CreatePackageAction;
 use App\Actions\Package\UpdatePackageAction;
 use App\Actions\Package\DeletePackageAction;
 use App\Models\Package;
 use App\Models\Tool;
+use App\Services\CachePatternService;
 use Illuminate\Http\Request;
 
 class PackageController extends Controller
 {
+    public function __construct(protected CachePatternService $cache)
+    {
+    }
+
     public function index()
     {
         $packages = Package::orderBy('sort_order')->orderBy('name')->paginate(20);
@@ -50,6 +56,8 @@ class PackageController extends Controller
 
         app(CreatePackageAction::class)($data);
 
+        $this->flushStorefrontCaches();
+
         return redirect()->route('business.packages.index')->with('status', 'Package created.');
     }
 
@@ -85,6 +93,8 @@ class PackageController extends Controller
 
         app(UpdatePackageAction::class)($package, $data);
 
+        $this->flushStorefrontCaches();
+
         return redirect()->route('business.packages.index')->with('status', 'Package updated.');
     }
 
@@ -92,6 +102,14 @@ class PackageController extends Controller
     {
         app(DeletePackageAction::class)($package);
 
+        $this->flushStorefrontCaches();
+
         return redirect()->route('business.packages.index')->with('status', 'Package deleted.');
+    }
+
+    protected function flushStorefrontCaches(): void
+    {
+        $this->cache->clearByPattern('storefront:packages:*');
+        $this->cache->clearByPattern('storefront:banners:*');
     }
 }

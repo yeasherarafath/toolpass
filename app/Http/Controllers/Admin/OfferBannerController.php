@@ -2,13 +2,19 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enum\CacheKeyEnum;
 use App\Http\Controllers\Controller;
 use App\Models\OfferBanner;
+use App\Services\CachePatternService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class OfferBannerController extends Controller
 {
+    public function __construct(protected CachePatternService $cache)
+    {
+    }
+
     public function index()
     {
         $banners = OfferBanner::ordered()->paginate(20);
@@ -32,6 +38,8 @@ class OfferBannerController extends Controller
 
         OfferBanner::create($data);
 
+        $this->flushStorefrontCaches();
+
         return redirect()->route('business.offer-banners.index')->with('status', 'Banner created.');
     }
 
@@ -54,6 +62,8 @@ class OfferBannerController extends Controller
 
         $offerBanner->update($data);
 
+        $this->flushStorefrontCaches();
+
         return redirect()->route('business.offer-banners.index')->with('status', 'Banner updated.');
     }
 
@@ -65,7 +75,15 @@ class OfferBannerController extends Controller
 
         $offerBanner->delete();
 
+        $this->flushStorefrontCaches();
+
         return redirect()->route('business.offer-banners.index')->with('status', 'Banner deleted.');
+    }
+
+    protected function flushStorefrontCaches(): void
+    {
+        $this->cache->clearByPattern('storefront:packages:*');
+        $this->cache->clearByPattern('storefront:banners:*');
     }
 
     protected function validateData(Request $request): array

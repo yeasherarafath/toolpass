@@ -39,6 +39,10 @@ enum CacheKeyEnum: string
 
     case ADMIN_PERMISSIONS_LIST = 'platform.admin_permissions';
 
+    case STOREFRONT_PACKAGES_PREFIX = 'storefront:packages:';
+
+    case STOREFRONT_BANNERS_PREFIX = 'storefront:banners:';
+
     // ────────────────────────────────────────────────────────────
     // Helpers for dynamically-generated keys
     // ────────────────────────────────────────────────────────────
@@ -99,6 +103,9 @@ enum CacheKeyEnum: string
             self::OWNER_DASHBOARD_WIDGETS,
             self::PLATFORM_DASHBOARD_WIDGETS => 'dashboards',
 
+            self::STOREFRONT_PACKAGES_PREFIX,
+            self::STOREFRONT_BANNERS_PREFIX => 'storefront',
+
             self::OTP_RATE_PREFIX => 'other',
         };
     }
@@ -121,6 +128,9 @@ enum CacheKeyEnum: string
             self::ADMIN_DASHBOARD_WIDGETS => 'admin',
             self::OWNER_DASHBOARD_WIDGETS => 'owner',
             self::PLATFORM_DASHBOARD_WIDGETS => 'platform',
+
+            self::STOREFRONT_PACKAGES_PREFIX => 'packages',
+            self::STOREFRONT_BANNERS_PREFIX => 'banners',
 
             self::OTP_RATE_PREFIX => 'otp-rate-limit',
         };
@@ -239,6 +249,27 @@ enum CacheKeyEnum: string
                         'icon' => 'ti ti-layout-grid',
                         'keys' => [self::PLATFORM_DASHBOARD_WIDGETS],
                         'patterns' => [],
+                    ],
+                ],
+            ],
+            'storefront' => [
+                'label' => 'Storefront',
+                'icon' => 'ti ti-shopping-cart',
+                'description' => 'Public storefront package and offer-banner lists (per tenant).',
+                'subModules' => [
+                    'packages' => [
+                        'label' => 'Packages',
+                        'description' => 'Active package list shown on the storefront (storefront:packages:{tenant}).',
+                        'icon' => 'ti ti-package',
+                        'keys' => [self::STOREFRONT_PACKAGES_PREFIX],
+                        'patterns' => ['storefront:packages:*'],
+                    ],
+                    'banners' => [
+                        'label' => 'Offer Banners',
+                        'description' => 'Active offer banners shown on the storefront (storefront:banners:{tenant}).',
+                        'icon' => 'ti ti-speakerphone',
+                        'keys' => [self::STOREFRONT_BANNERS_PREFIX],
+                        'patterns' => ['storefront:banners:*'],
                     ],
                 ],
             ],

@@ -5,12 +5,23 @@ namespace Tests\Feature;
 use App\Models\Package;
 use App\Models\Tool;
 use App\Models\PackageTool;
+use App\Services\CachePatternService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TenantTestCase;
 
 class StorefrontTest extends TenantTestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        app(CachePatternService::class)->clearByPatterns([
+            'storefront:packages:*',
+            'storefront:banners:*',
+        ]);
+    }
 
     public function test_active_packages_are_listed(): void
     {

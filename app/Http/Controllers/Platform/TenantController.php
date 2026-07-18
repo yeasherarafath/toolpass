@@ -13,7 +13,7 @@ class TenantController extends Controller
 {
     public function index()
     {
-        $tenants = Tenant::query()->orderBy('id')->paginate(25);
+        $tenants = Tenant::query()->with('domains')->orderBy('id')->paginate(25);
 
         return view('platform.admin.tenants.index', compact('tenants'));
     }
