@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enum\CacheKeyEnum;
 use App\Models\Setting;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Crypt;
@@ -26,7 +27,7 @@ class TenantSettings
 
     protected function cacheKey(): string
     {
-        return 'tenant.' . $this->tenantId() . '.settings';
+        return CacheKeyEnum::tenantSettings($this->tenantId());
     }
 
     /**

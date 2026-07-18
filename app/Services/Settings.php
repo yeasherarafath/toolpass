@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enum\CacheKeyEnum;
 use App\Models\PlatformSetting;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Crypt;
@@ -16,7 +17,7 @@ use Illuminate\Support\Facades\Crypt;
  */
 class Settings
 {
-    protected const CACHE_KEY = 'platform.settings.all';
+    protected const CACHE_KEY = CacheKeyEnum::PLATFORM_SETTINGS->value;
 
     /**
      * @return array<string, mixed>

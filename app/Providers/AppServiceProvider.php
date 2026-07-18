@@ -14,6 +14,8 @@ use App\Models\UserToolAccess;
 use App\Models\OtpRequest;
 use App\Models\DeviceResetRequest;
 use App\Models\Payment;
+use App\Models\Setting;
+use App\Models\PlatformSetting;
 use App\Observers\UserObserver;
 use App\Observers\ToolAccountObserver;
 use App\Observers\OrderObserver;
@@ -21,6 +23,8 @@ use App\Observers\UserToolAccessObserver;
 use App\Observers\OtpRequestObserver;
 use App\Observers\DeviceResetRequestObserver;
 use App\Observers\PaymentObserver;
+use App\Observers\SettingObserver;
+use App\Observers\PlatformSettingObserver;
 use App\Events\User\UserCreated;
 use App\Events\ToolAccount\ToolAccountCreated;
 use App\Events\Order\OrderCreated;
@@ -56,6 +60,8 @@ class AppServiceProvider extends ServiceProvider
         OtpRequest::observe(OtpRequestObserver::class);
         DeviceResetRequest::observe(DeviceResetRequestObserver::class);
         Payment::observe(PaymentObserver::class);
+        Setting::observe(SettingObserver::class);
+        PlatformSetting::observe(PlatformSettingObserver::class);
 
         Event::listen(UserCreated::class, SendWelcomeNotification::class);
         Event::listen(ToolAccountCreated::class, NotifyToolAccountAdded::class);
