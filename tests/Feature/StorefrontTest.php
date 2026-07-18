@@ -17,6 +17,11 @@ class StorefrontTest extends TenantTestCase
     {
         parent::setUp();
 
+        // The storefront list is cached per tenant; clear it on the default
+        // (array in tests) store so a prior test's cached list can't leak in.
+        \Illuminate\Support\Facades\Cache::forget('storefront:packages:testco');
+        \Illuminate\Support\Facades\Cache::forget('storefront:banners:testco');
+
         app(CachePatternService::class)->clearByPatterns([
             'storefront:packages:*',
             'storefront:banners:*',

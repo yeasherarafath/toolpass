@@ -18,7 +18,7 @@ class UserToolDeviceFactory extends Factory
             'user_id' => User::factory(),
             'user_tool_access_id' => UserToolAccess::factory(),
             'tool_id' => Tool::factory(),
-            'device_name' => fake()->userAgent(),
+            'device_name' => substr(fake()->userAgent(), 0, 150),
             'device_type' => fake()->randomElement(['desktop', 'mobile', 'tablet', 'browser']),
             'browser_name' => fake()->randomElement(['Chrome', 'Firefox', 'Safari']),
             'operating_system' => fake()->randomElement(['Windows', 'macOS', 'Android', 'iOS']),

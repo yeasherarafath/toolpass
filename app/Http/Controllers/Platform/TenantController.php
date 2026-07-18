@@ -2,18 +2,28 @@
 
 namespace App\Http\Controllers\Platform;
 
+use App\Enum\CacheKeyEnum;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Stancl\Tenancy\Features\UserImpersonation;
 use Stancl\Tenancy\Tenancy;
 
 class TenantController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $tenants = Tenant::query()->with('domains')->orderBy('id')->paginate(25);
+        $page = (int) $request->input('page', 1);
+
+        $tenants = Cache::remember(
+            CacheKeyEnum::ADMIN_TENANTS_LIST->value.':'.$page,
+            300,
+            function () {
+                return Tenant::query()->with('domains')->orderBy('id')->paginate(25);
+            }
+        );
 
         return view('platform.admin.tenants.index', compact('tenants'));
     }
@@ -33,6 +43,8 @@ class TenantController extends Controller
 
         $tenant = Tenant::create($data);
         $tenant->domains()->create(['domain' => $data['id'] . '.' . config('tenancy.central_domains')[0]]);
+
+        $this->flushListCache();
 
         return redirect()->route('admin.tenants.index')->with('status', 'Tenant created.');
     }
@@ -55,6 +67,8 @@ class TenantController extends Controller
 
         $tenant->update($data);
 
+        $this->flushListCache();
+
         return redirect()->route('admin.tenants.index')->with('status', 'Tenant updated.');
     }
 
@@ -62,7 +76,17 @@ class TenantController extends Controller
     {
         $tenant->delete();
 
+        $this->flushListCache();
+
         return redirect()->route('admin.tenants.index')->with('status', 'Tenant deleted.');
+    }
+
+    protected function flushListCache(): void
+    {
+        Cache::forget(CacheKeyEnum::ADMIN_TENANTS_LIST->value.':1');
+
+        app(\App\Services\CachePatternService::class)
+            ->clearByPattern(CacheKeyEnum::ADMIN_TENANTS_LIST->value.':*');
     }
 
     /**

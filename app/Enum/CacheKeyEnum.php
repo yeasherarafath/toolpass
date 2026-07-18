@@ -39,6 +39,8 @@ enum CacheKeyEnum: string
 
     case ADMIN_PERMISSIONS_LIST = 'platform.admin_permissions';
 
+    case ADMIN_TENANTS_LIST = 'platform.admin_tenants';
+
     case STOREFRONT_PACKAGES_PREFIX = 'storefront:packages:';
 
     case STOREFRONT_BANNERS_PREFIX = 'storefront:banners:';
@@ -94,7 +96,8 @@ enum CacheKeyEnum: string
             self::ADMIN_DASHBOARD => 'settings',
 
             self::ADMIN_ROLES_LIST,
-            self::ADMIN_PERMISSIONS_LIST => 'admin',
+            self::ADMIN_PERMISSIONS_LIST,
+            self::ADMIN_TENANTS_LIST => 'admin',
 
             self::TENANT_SETTINGS_PREFIX,
             self::CUSTOMER_DASHBOARD_PREFIX => 'tenant',
@@ -121,6 +124,7 @@ enum CacheKeyEnum: string
 
             self::ADMIN_ROLES_LIST => 'roles',
             self::ADMIN_PERMISSIONS_LIST => 'permissions',
+            self::ADMIN_TENANTS_LIST => 'tenants',
 
             self::TENANT_SETTINGS_PREFIX => 'tenant-settings',
             self::CUSTOMER_DASHBOARD_PREFIX => 'customer-dashboard',
@@ -199,6 +203,13 @@ enum CacheKeyEnum: string
                         'description' => 'Cached admin-guard permission list (form selects).',
                         'icon' => 'ti ti-lock',
                         'keys' => [self::ADMIN_PERMISSIONS_LIST],
+                        'patterns' => [],
+                    ],
+                    'tenants' => [
+                        'label' => 'Tenant List',
+                        'description' => 'Cached platform tenant listing (admin tenants index).',
+                        'icon' => 'ti ti-building',
+                        'keys' => [self::ADMIN_TENANTS_LIST],
                         'patterns' => [],
                     ],
                 ],

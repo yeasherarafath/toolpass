@@ -55,4 +55,31 @@ class AdminListOptimizationTest extends TenantTestCase
     {
         $this->assertTrue(CacheKeyEnum::validateStructure()['passed']);
     }
+
+    public function test_tenant_list_is_cached_and_invalidated(): void
+    {
+        $admin = Admin::where('email', 'superadmin@toolpass.test')->first();
+        $this->actingAs($admin, 'admin');
+
+        $this->withServerVariables(['HTTP_HOST' => '127.0.0.1'])
+            ->get(route('admin.tenants.index'))
+            ->assertOk();
+
+        $this->assertTrue(
+            \Illuminate\Support\Facades\Cache::has(CacheKeyEnum::ADMIN_TENANTS_LIST->value.':1')
+        );
+
+        // Creating a tenant via the controller must flush the cached list.
+        $this->withServerVariables(['HTTP_HOST' => '127.0.0.1'])
+            ->post(route('admin.tenants.store'), [
+                'id' => 'newco'.uniqid(),
+                'business_name' => 'New Co',
+                'status' => 'active',
+            ])
+            ->assertRedirect();
+
+        $this->assertFalse(
+            \Illuminate\Support\Facades\Cache::has(CacheKeyEnum::ADMIN_TENANTS_LIST->value.':1')
+        );
+    }
 }
