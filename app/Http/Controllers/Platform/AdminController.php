@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Platform;
 
+use App\Enum\CacheKeyEnum;
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 
@@ -19,7 +21,7 @@ class AdminController extends Controller
 
     public function create()
     {
-        $roles = Role::query()->where('guard_name', 'admin')->get();
+        $roles = $this->rolesList();
 
         return view('platform.admin.admins.create', compact('roles'));
     }
@@ -42,12 +44,14 @@ class AdminController extends Controller
         $admin = Admin::create($data);
         $admin->syncRoles(Role::query()->whereIn('id', $data['roles'] ?? [])->get());
 
+        Cache::forget(CacheKeyEnum::ADMIN_ROLES_LIST->value);
+
         return redirect()->route('admin.admins.index')->with('status', 'Admin created.');
     }
 
     public function edit(Admin $admin)
     {
-        $roles = Role::query()->where('guard_name', 'admin')->get();
+        $roles = $this->rolesList();
 
         return view('platform.admin.admins.edit', compact('admin', 'roles'));
     }
@@ -73,6 +77,8 @@ class AdminController extends Controller
         $admin->update($data);
         $admin->syncRoles(Role::query()->whereIn('id', $data['roles'] ?? [])->get());
 
+        Cache::forget(CacheKeyEnum::ADMIN_ROLES_LIST->value);
+
         return redirect()->route('admin.admins.index')->with('status', 'Admin updated.');
     }
 
@@ -84,6 +90,15 @@ class AdminController extends Controller
 
         $admin->delete();
 
+        Cache::forget(CacheKeyEnum::ADMIN_ROLES_LIST->value);
+
         return redirect()->route('admin.admins.index')->with('status', 'Admin deleted.');
+    }
+
+    protected function rolesList(): \Illuminate\Database\Eloquent\Collection
+    {
+        return Cache::rememberForever(CacheKeyEnum::ADMIN_ROLES_LIST->value, function () {
+            return Role::query()->where('guard_name', 'admin')->get();
+        });
     }
 }

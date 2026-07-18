@@ -35,6 +35,10 @@ enum CacheKeyEnum: string
 
     case PLATFORM_DASHBOARD_WIDGETS = 'platform.dashboard_widgets';
 
+    case ADMIN_ROLES_LIST = 'platform.admin_roles';
+
+    case ADMIN_PERMISSIONS_LIST = 'platform.admin_permissions';
+
     // ────────────────────────────────────────────────────────────
     // Helpers for dynamically-generated keys
     // ────────────────────────────────────────────────────────────
@@ -85,6 +89,9 @@ enum CacheKeyEnum: string
             self::PLATFORM_SETTINGS,
             self::ADMIN_DASHBOARD => 'settings',
 
+            self::ADMIN_ROLES_LIST,
+            self::ADMIN_PERMISSIONS_LIST => 'admin',
+
             self::TENANT_SETTINGS_PREFIX,
             self::CUSTOMER_DASHBOARD_PREFIX => 'tenant',
 
@@ -104,6 +111,9 @@ enum CacheKeyEnum: string
         return match ($this) {
             self::PLATFORM_SETTINGS => 'platform',
             self::ADMIN_DASHBOARD => 'admin-dashboard',
+
+            self::ADMIN_ROLES_LIST => 'roles',
+            self::ADMIN_PERMISSIONS_LIST => 'permissions',
 
             self::TENANT_SETTINGS_PREFIX => 'tenant-settings',
             self::CUSTOMER_DASHBOARD_PREFIX => 'customer-dashboard',
@@ -158,6 +168,27 @@ enum CacheKeyEnum: string
                         'description' => 'Cached admin dashboard widget counts.',
                         'icon' => 'ti ti-layout-dashboard',
                         'keys' => [self::ADMIN_DASHBOARD],
+                        'patterns' => [],
+                    ],
+                ],
+            ],
+            'admin' => [
+                'label' => 'Admin / RBAC',
+                'icon' => 'ti ti-shield',
+                'description' => 'Admin roles and permission lists used in forms.',
+                'subModules' => [
+                    'roles' => [
+                        'label' => 'Admin Roles',
+                        'description' => 'Cached admin-guard role list (form selects).',
+                        'icon' => 'ti ti-user-tag',
+                        'keys' => [self::ADMIN_ROLES_LIST],
+                        'patterns' => [],
+                    ],
+                    'permissions' => [
+                        'label' => 'Permissions',
+                        'description' => 'Cached admin-guard permission list (form selects).',
+                        'icon' => 'ti ti-lock',
+                        'keys' => [self::ADMIN_PERMISSIONS_LIST],
                         'patterns' => [],
                     ],
                 ],
