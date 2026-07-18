@@ -2,24 +2,24 @@
 
 namespace App\Actions\Otp;
 
-use Illuminate\Support\Facades\Cache;
+use App\Enum\CacheKeyEnum;
+use Illuminate\Support\Facades\RateLimiter;
 
 trait HandlesOtpRateLimit
 {
     protected function assertWithinRateLimit(int $userId, int $maxPerMinute = 3): void
     {
-        $key = 'otp_rate_' . $userId;
-        $count = (int) Cache::get($key, 0);
+        $key = CacheKeyEnum::otpRate($userId);
 
-        if ($count >= $maxPerMinute) {
+        if (RateLimiter::tooManyAttempts($key, $maxPerMinute)) {
             throw new \RuntimeException('Too many OTP requests. Please wait before requesting again.');
         }
 
-        Cache::put($key, $count + 1, now()->addMinute());
+        RateLimiter::hit($key, 60);
     }
 
     protected function clearRateLimit(int $userId): void
     {
-        Cache::forget('otp_rate_' . $userId);
+        RateLimiter::clear(CacheKeyEnum::otpRate($userId));
     }
 }

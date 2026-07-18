@@ -2,6 +2,7 @@
 
 namespace App\Actions\Otp;
 
+use App\Actions\Otp\HandlesOtpRateLimit;
 use App\Events\Otp\OtpProvided;
 use App\Models\OtpRequest;
 use App\Models\User;
@@ -9,6 +10,8 @@ use Illuminate\Support\Facades\Crypt;
 
 class ProvideOtpAction
 {
+    use HandlesOtpRateLimit;
+
     public function handle(OtpRequest $request, User $admin, ?string $customerMessage = null): OtpRequest
     {
         if ($request->status === 'provided' || $request->status === 'used') {
@@ -24,6 +27,8 @@ class ProvideOtpAction
         $request->provided_at = now();
         $request->admin_note = $customerMessage;
         $request->save();
+
+        $this->clearRateLimit($request->user_id);
 
         event(new OtpProvided($request));
 
