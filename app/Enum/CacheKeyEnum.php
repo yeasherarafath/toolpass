@@ -29,6 +29,12 @@ enum CacheKeyEnum: string
 
     case OTP_RATE_PREFIX = 'otp_rate:';
 
+    case ADMIN_DASHBOARD_WIDGETS = 'platform.admin_dashboard_widgets';
+
+    case OWNER_DASHBOARD_WIDGETS = 'platform.owner_dashboard_widgets';
+
+    case PLATFORM_DASHBOARD_WIDGETS = 'platform.dashboard_widgets';
+
     // ────────────────────────────────────────────────────────────
     // Helpers for dynamically-generated keys
     // ────────────────────────────────────────────────────────────
@@ -71,7 +77,7 @@ enum CacheKeyEnum: string
     /**
      * Map this cache key to a top-level group slug.
      *
-     * Groups: settings, tenant, admin, other
+     * Groups: settings, tenant, dashboards, admin, other
      */
     public function group(): string
     {
@@ -81,6 +87,10 @@ enum CacheKeyEnum: string
 
             self::TENANT_SETTINGS_PREFIX,
             self::CUSTOMER_DASHBOARD_PREFIX => 'tenant',
+
+            self::ADMIN_DASHBOARD_WIDGETS,
+            self::OWNER_DASHBOARD_WIDGETS,
+            self::PLATFORM_DASHBOARD_WIDGETS => 'dashboards',
 
             self::OTP_RATE_PREFIX => 'other',
         };
@@ -97,6 +107,10 @@ enum CacheKeyEnum: string
 
             self::TENANT_SETTINGS_PREFIX => 'tenant-settings',
             self::CUSTOMER_DASHBOARD_PREFIX => 'customer-dashboard',
+
+            self::ADMIN_DASHBOARD_WIDGETS => 'admin',
+            self::OWNER_DASHBOARD_WIDGETS => 'owner',
+            self::PLATFORM_DASHBOARD_WIDGETS => 'platform',
 
             self::OTP_RATE_PREFIX => 'otp-rate-limit',
         };
@@ -166,6 +180,34 @@ enum CacheKeyEnum: string
                         'icon' => 'ti ti-user',
                         'keys' => [self::CUSTOMER_DASHBOARD_PREFIX],
                         'patterns' => ['customer_dashboard:*'],
+                    ],
+                ],
+            ],
+            'dashboards' => [
+                'label' => 'Dashboards',
+                'icon' => 'ti ti-layout-dashboard',
+                'description' => 'Platform, owner, and business dashboard widget caches.',
+                'subModules' => [
+                    'admin' => [
+                        'label' => 'Admin Dashboard',
+                        'description' => 'GOD admin dashboard counts (admins, owners, tenants, subscriptions).',
+                        'icon' => 'ti ti-shield',
+                        'keys' => [self::ADMIN_DASHBOARD_WIDGETS],
+                        'patterns' => [],
+                    ],
+                    'owner' => [
+                        'label' => 'Owner Dashboard',
+                        'description' => 'Business owner dashboard counts (plans, active subscriptions).',
+                        'icon' => 'ti ti-user',
+                        'keys' => [self::OWNER_DASHBOARD_WIDGETS],
+                        'patterns' => [],
+                    ],
+                    'platform' => [
+                        'label' => 'Platform Dashboard',
+                        'description' => 'Landing/platform dashboard counts (tenants, owners, plans, subscriptions).',
+                        'icon' => 'ti ti-layout-grid',
+                        'keys' => [self::PLATFORM_DASHBOARD_WIDGETS],
+                        'patterns' => [],
                     ],
                 ],
             ],
