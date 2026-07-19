@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.customer')
 
 @section('header')
     <h2 class="page-title">My Dashboard</h2>

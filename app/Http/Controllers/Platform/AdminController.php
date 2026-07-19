@@ -60,7 +60,7 @@ class AdminController extends Controller
     {
         $data = $request->validate([
             'name' => ['required', 'string', 'max:150'],
-            'email' => ['required', 'email', 'max:190', 'unique:central.admins,email,' . $admin->getKey()],
+            'email' => ['required', 'email', 'max:190', 'unique:central.admins,email,'.$admin->getKey()],
             'phone' => ['nullable', 'string', 'max:30'],
             'password' => ['nullable', 'string', 'min:8'],
             'status' => ['required', 'in:active,suspended'],
@@ -97,7 +97,7 @@ class AdminController extends Controller
 
     protected function rolesList(): \Illuminate\Database\Eloquent\Collection
     {
-        return cached_collection(CacheKeyEnum::ADMIN_ROLES_LIST->value, function () {
+        return Cache::rememberForever(CacheKeyEnum::ADMIN_ROLES_LIST->value, function () {
             return Role::query()->where('guard_name', 'admin')->get();
         });
     }

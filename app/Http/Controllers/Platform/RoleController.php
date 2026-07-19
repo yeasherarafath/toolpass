@@ -13,7 +13,7 @@ class RoleController extends Controller
 {
     public function index()
     {
-        $roles = cached_collection(CacheKeyEnum::ADMIN_ROLES_LIST->value, function () {
+        $roles = Cache::rememberForever(CacheKeyEnum::ADMIN_ROLES_LIST->value, function () {
             return Role::query()->where('guard_name', 'admin')->orderBy('name')->get();
         });
 
@@ -54,7 +54,7 @@ class RoleController extends Controller
     public function update(Request $request, Role $role)
     {
         $data = $request->validate([
-            'name' => ['required', 'string', 'max:150', 'unique:central.roles,name,' . $role->getKey()],
+            'name' => ['required', 'string', 'max:150', 'unique:central.roles,name,'.$role->getKey()],
             'permissions' => ['nullable', 'array'],
             'permissions.*' => ['exists:central.permissions,id'],
         ]);
@@ -78,7 +78,7 @@ class RoleController extends Controller
 
     protected function permissionsList(): \Illuminate\Database\Eloquent\Collection
     {
-        return cached_collection(CacheKeyEnum::ADMIN_PERMISSIONS_LIST->value, function () {
+        return Cache::rememberForever(CacheKeyEnum::ADMIN_PERMISSIONS_LIST->value, function () {
             return Permission::query()->where('guard_name', 'admin')->orderBy('name')->get();
         });
     }
