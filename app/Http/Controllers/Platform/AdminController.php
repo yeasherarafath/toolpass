@@ -97,7 +97,7 @@ class AdminController extends Controller
 
     protected function rolesList(): \Illuminate\Database\Eloquent\Collection
     {
-        return \App\Helper::cachedCollection(CacheKeyEnum::ADMIN_ROLES_LIST->value, function () {
+        return cached_collection(CacheKeyEnum::ADMIN_ROLES_LIST->value, function () {
             return Role::query()->where('guard_name', 'admin')->get();
         });
     }

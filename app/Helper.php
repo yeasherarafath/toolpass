@@ -1,58 +1,66 @@
 <?php
 
-namespace App;
-
 use App\Services\Settings;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
-/**
- * Grab-bag of repetitive helpers, mostly thin wrappers around the central
- * platform Settings service plus a few small "fun" utilities used across
- * views and controllers.
- */
-class Helper
-{
-    protected static function settings(): Settings
+if (! function_exists('setting')) {
+    /**
+     * Read a central platform setting.
+     */
+    function setting(string $key, mixed $default = null): mixed
     {
-        return app(Settings::class);
+        return app(Settings::class)->get($key, $default);
     }
+}
 
-    public static function setting(string $key, mixed $default = null): mixed
+if (! function_exists('helper_path')) {
+    /**
+     * Resolve a URL path-prefix setting for route registration.
+     */
+    function helper_path(string $key, string $default): string
     {
-        return self::settings()->get($key, $default);
+        return app(Settings::class)->path($key, $default);
     }
+}
 
-    public static function path(string $key, string $default): string
+if (! function_exists('helper_bool')) {
+    function helper_bool(string $key, bool $default = false): bool
     {
-        return self::settings()->path($key, $default);
+        return app(Settings::class)->bool($key, $default);
     }
+}
 
-    public static function bool(string $key, bool $default = false): bool
+if (! function_exists('site_name')) {
+    function site_name(): string
     {
-        return self::settings()->bool($key, $default);
+        return (string) app(Settings::class)->get('site_name', 'ToolPass');
     }
+}
 
-    public static function siteName(): string
+if (! function_exists('support_email')) {
+    function support_email(): ?string
     {
-        return (string) self::settings()->get('site_name', 'ToolPass');
+        return app(Settings::class)->get('support_email');
     }
+}
 
-    public static function supportEmail(): ?string
+if (! function_exists('admin_path')) {
+    function admin_path(): string
     {
-        return self::settings()->get('support_email');
+        return app(Settings::class)->path('admin_path', 'yatpmin');
     }
+}
 
-    public static function adminPath(): string
+if (! function_exists('owner_path')) {
+    function owner_path(): string
     {
-        return self::settings()->path('admin_path', 'yatpmin');
+        return app(Settings::class)->path('owner_path', 'business');
     }
+}
 
-    public static function ownerPath(): string
-    {
-        return self::settings()->path('owner_path', 'business');
-    }
-
-    public static function initials(string $name, int $limit = 2): string
+if (! function_exists('initials')) {
+    function initials(string $name, int $limit = 2): string
     {
         $parts = preg_split('/\s+/', trim($name)) ?: [$name];
 
@@ -62,13 +70,17 @@ class Helper
             ->take($limit)
             ->implode('');
     }
+}
 
-    public static function randomColor(): string
+if (! function_exists('random_color')) {
+    function random_color(): string
     {
         return sprintf('#%06X', mt_rand(0, 0xFFFFFF));
     }
+}
 
-    public static function mask(string $value, int $keep = 3): string
+if (! function_exists('mask')) {
+    function mask(string $value, int $keep = 3): string
     {
         $length = mb_strlen($value);
 
@@ -78,12 +90,16 @@ class Helper
 
         return mb_substr($value, 0, $keep) . str_repeat('*', $length - $keep);
     }
+}
 
-    public static function slugify(string $value): string
+if (! function_exists('slugify')) {
+    function slugify(string $value): string
     {
         return Str::slug($value);
     }
+}
 
+if (! function_exists('cached_collection')) {
     /**
      * Cache an Eloquent collection forever, self-healing on a corrupted or
      * unserializable cache entry (e.g. a stale __PHP_Incomplete_Class left
@@ -91,16 +107,16 @@ class Helper
      *
      * @param  (callable(): \Illuminate\Database\Eloquent\Collection)  $callback
      */
-    public static function cachedCollection(string $key, callable $callback): \Illuminate\Database\Eloquent\Collection
+    function cached_collection(string $key, callable $callback): \Illuminate\Database\Eloquent\Collection
     {
-        $value = \Illuminate\Support\Facades\Cache::get($key);
+        $value = Cache::get($key);
 
         if ($value instanceof \Illuminate\Database\Eloquent\Collection) {
             return $value;
         }
 
-        \Illuminate\Support\Facades\Cache::forget($key);
+        Cache::forget($key);
 
-        return \Illuminate\Support\Facades\Cache::rememberForever($key, $callback);
+        return Cache::rememberForever($key, $callback);
     }
 }
