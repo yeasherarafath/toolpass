@@ -17,6 +17,7 @@ return [
      */
     'central_domains' => array_filter([
         '127.0.0.1',
+        'group-by-tools.test',
         'localhost',
         env('CENTRAL_DOMAIN'),
     ]),
