@@ -16,8 +16,8 @@ return [
      * Only relevant if you're using the domain or subdomain identification middleware.
      */
     'central_domains' => array_filter([
-        '127.0.0.1',
         'group-by-tools.test',
+        '127.0.0.1',
         'localhost',
         env('CENTRAL_DOMAIN'),
     ]),

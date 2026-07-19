@@ -123,4 +123,6 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'editor' => env('DEBUGBAR_EDITOR') ?: env('IGNITION_EDITOR', 'vscode'),
+
 ];

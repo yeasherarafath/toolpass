@@ -83,4 +83,24 @@ class Helper
     {
         return Str::slug($value);
     }
+
+    /**
+     * Cache an Eloquent collection forever, self-healing on a corrupted or
+     * unserializable cache entry (e.g. a stale __PHP_Incomplete_Class left
+     * behind by an earlier autoloader/config state).
+     *
+     * @param  (callable(): \Illuminate\Database\Eloquent\Collection)  $callback
+     */
+    public static function cachedCollection(string $key, callable $callback): \Illuminate\Database\Eloquent\Collection
+    {
+        $value = \Illuminate\Support\Facades\Cache::get($key);
+
+        if ($value instanceof \Illuminate\Database\Eloquent\Collection) {
+            return $value;
+        }
+
+        \Illuminate\Support\Facades\Cache::forget($key);
+
+        return \Illuminate\Support\Facades\Cache::rememberForever($key, $callback);
+    }
 }

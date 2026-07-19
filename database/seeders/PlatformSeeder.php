@@ -16,23 +16,9 @@ class PlatformSeeder extends Seeder
     {
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-        $permissions = [
-            'manage-admins',
-            'manage-owners',
-            'manage-plans',
-            'manage-subscriptions',
-            'manage-tenants',
-            'manage-gateway',
-            'manage-settings',
-            'manage-reserved-slugs',
-            'impersonate-tenant',
-            'send-mail',
-            'view-platform',
-        ];
+        $this->call(PermissionsSeeder::class);
 
-        foreach ($permissions as $name) {
-            Permission::findOrCreate($name, 'admin');
-        }
+        $permissions = PermissionsSeeder::permissions();
 
         $superAdmin = Role::findOrCreate('super_admin', 'admin');
         $platformStaff = Role::findOrCreate('platform_staff', 'admin');

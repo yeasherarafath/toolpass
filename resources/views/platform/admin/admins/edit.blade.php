@@ -31,6 +31,7 @@
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Roles</label>
+                    @dd($roles)
                     <select name="roles[]" class="form-select" multiple>
                         @foreach ($roles as $role)
                             <option value="{{ $role->id }}" {{ (in_array($role->id, old('roles', [])) || $admin->hasRole($role->name)) ? 'selected' : '' }}>{{ $role->name }}</option>

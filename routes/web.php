@@ -12,6 +12,7 @@ use App\Http\Controllers\Platform\OwnerController;
 use App\Http\Controllers\Platform\OwnerDashboardController;
 use App\Http\Controllers\Platform\OwnerSettingsController;
 use App\Http\Controllers\Platform\PlanController;
+use App\Http\Controllers\Platform\PermissionController;
 use App\Http\Controllers\Platform\RoleController;
 use App\Http\Controllers\Platform\SettingsController;
 use App\Http\Controllers\Platform\SubscriptionController;
@@ -72,6 +73,7 @@ foreach (config('tenancy.central_domains') as $domain) {
                 // GOD CRUD
                 Route::resource('admins', AdminController::class)->except(['show']);
                 Route::resource('roles', RoleController::class)->except(['show']);
+                Route::get('permissions', [PermissionController::class, 'index'])->name('permissions.index');
                 Route::resource('owners', OwnerController::class)->except(['show']);
                 Route::resource('plans', PlanController::class)->except(['show']);
                 Route::resource('subscriptions', SubscriptionController::class)->except(['show']);

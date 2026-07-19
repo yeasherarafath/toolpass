@@ -13,7 +13,7 @@ class RoleController extends Controller
 {
     public function index()
     {
-        $roles = Cache::rememberForever(CacheKeyEnum::ADMIN_ROLES_LIST->value, function () {
+        $roles = \App\Helper::cachedCollection(CacheKeyEnum::ADMIN_ROLES_LIST->value, function () {
             return Role::query()->where('guard_name', 'admin')->orderBy('name')->get();
         });
 
@@ -78,7 +78,7 @@ class RoleController extends Controller
 
     protected function permissionsList(): \Illuminate\Database\Eloquent\Collection
     {
-        return Cache::rememberForever(CacheKeyEnum::ADMIN_PERMISSIONS_LIST->value, function () {
+        return \App\Helper::cachedCollection(CacheKeyEnum::ADMIN_PERMISSIONS_LIST->value, function () {
             return Permission::query()->where('guard_name', 'admin')->orderBy('name')->get();
         });
     }
