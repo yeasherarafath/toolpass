@@ -13,3 +13,13 @@
 body {
     font-family: var(--font-sans);
 }
+
+/* Top navbar spans the full width (override Tabler's sibling margin-left:15rem);
+   the fixed vertical sidebar is shifted down so its brand/toggler stay visible. */
+.navbar-vertical ~ .navbar {
+    margin-left: 0;
+}
+
+.navbar-vertical {
+    top: 3.5rem;
+}

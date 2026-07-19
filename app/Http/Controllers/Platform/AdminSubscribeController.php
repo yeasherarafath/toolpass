@@ -13,7 +13,8 @@ class AdminSubscribeController extends Controller
     public function create()
     {
         $owners = Owner::getCached(null, 'id', ['*'], 3600);
-        $plans = Plan::getCached('active', 'status', ['*'], 3600);
+        $plans = Plan::getCached(null, 'id', ['*'], 3600);
+
 
         return view('platform.admin.subscribe.create', compact('owners', 'plans'));
     }
